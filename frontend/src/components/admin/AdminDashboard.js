@@ -26,6 +26,7 @@ function AdminDashboard() {
     }
 
     fetchData(token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, filter, search]);
 
   const fetchData = async (token) => {

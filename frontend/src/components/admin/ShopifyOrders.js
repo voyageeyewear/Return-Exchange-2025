@@ -11,6 +11,7 @@ function ShopifyOrders() {
 
   useEffect(() => {
     fetchShopifyOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchShopifyOrders = async () => {

@@ -23,6 +23,7 @@ function RequestDetails() {
     }
 
     fetchRequestDetails(token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, navigate]);
 
   const fetchRequestDetails = async (token) => {
