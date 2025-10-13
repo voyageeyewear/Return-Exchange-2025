@@ -50,6 +50,18 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Return & Exchange System API is running' });
 });
 
+// Serve frontend static files in production
+if (process.env.NODE_ENV === 'production') {
+  const frontendBuild = path.join(__dirname, '../frontend/build');
+  
+  app.use(express.static(frontendBuild));
+  
+  // Handle React routing - return all requests to React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendBuild, 'index.html'));
+  });
+}
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
