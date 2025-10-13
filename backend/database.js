@@ -1,9 +1,21 @@
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const fs = require('fs');
 
-const dbPath = path.join(__dirname, '../database.db');
-const db = new sqlite3.Database(dbPath);
+// Use /data volume on Railway if available, otherwise use local directory
+const dataDir = fs.existsSync('/data') ? '/data' : path.join(__dirname, '..');
+const dbPath = path.join(dataDir, 'database.db');
+
+console.log(`📁 Database path: ${dbPath}`);
+
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error('❌ Database connection error:', err.message);
+  } else {
+    console.log('✅ Database connected');
+  }
+});
 
 // Initialize database tables
 db.serialize(() => {

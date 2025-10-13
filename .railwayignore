@@ -1,0 +1,11 @@
+# Don't deploy these files to Railway
+node_modules/
+.git/
+.env
+.DS_Store
+*.log
+database.db
+uploads/
+frontend/node_modules/
+frontend/build/
+

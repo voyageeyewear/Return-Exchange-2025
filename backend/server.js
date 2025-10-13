@@ -25,9 +25,11 @@ app.use('/images', express.static(path.join(__dirname, '../public/images')));
 // Initialize database
 const db = require('./database');
 
-// Verify Shopify connection
+// Verify Shopify connection (non-blocking)
 const { verifyShopifyConnection } = require('./services/shopify');
-verifyShopifyConnection();
+verifyShopifyConnection().catch(err => {
+  console.warn('⚠️ Shopify connection failed (will retry on API calls):', err.message);
+});
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -68,9 +70,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!', message: err.message });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📦 API available at http://localhost:${PORT}/api`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+  console.log(`📦 API available at http://0.0.0.0:${PORT}/api`);
   console.log(`🔐 Admin login: ${process.env.ADMIN_EMAIL || 'admin@example.com'}`);
+  console.log(`🌍 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 });
 
