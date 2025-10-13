@@ -56,12 +56,23 @@ app.get('/api/health', (req, res) => {
 if (process.env.NODE_ENV === 'production') {
   const frontendBuild = path.join(__dirname, '../frontend/build');
   
-  app.use(express.static(frontendBuild));
-  
-  // Handle React routing - return all requests to React app
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendBuild, 'index.html'));
-  });
+  // Check if build directory exists
+  if (fs.existsSync(frontendBuild)) {
+    console.log(`✅ Frontend build found at: ${frontendBuild}`);
+    app.use(express.static(frontendBuild));
+    
+    // Handle React routing - return all requests to React app (MUST be last)
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(frontendBuild, 'index.html'));
+    });
+  } else {
+    console.error(`❌ Frontend build NOT found at: ${frontendBuild}`);
+    app.get('*', (req, res) => {
+      res.status(404).send('Frontend build not found. Please run: npm run build');
+    });
+  }
+} else {
+  console.log('ℹ️  Running in development mode - frontend should run separately on port 3000');
 }
 
 // Error handling middleware
