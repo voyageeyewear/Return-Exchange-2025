@@ -32,26 +32,64 @@ async function getShopifyOrders(limit = 50) {
 // Get a single order by order number/name
 async function getShopifyOrderByName(orderName) {
   try {
+    // Fetch order without field restrictions to get ALL data
     const response = await shopifyAPI.get('/orders.json', {
       params: {
         name: orderName,
-        status: 'any',
-        fields: 'id,name,email,phone,created_at,customer,billing_address,shipping_address,line_items,total_price,contact_email'
+        status: 'any'
       }
     });
     
     if (response.data.orders && response.data.orders.length > 0) {
-      const order = response.data.orders[0];
+      let order = response.data.orders[0];
       
-      // If customer_id exists but customer object is missing, fetch customer details
-      if (order.customer && order.customer.id && !order.customer.email) {
+      console.log(`📦 Raw order data for ${orderName}:`, {
+        email: order.email,
+        contact_email: order.contact_email,
+        phone: order.phone,
+        customer_id: order.customer?.id,
+        customer_email: order.customer?.email,
+        customer_phone: order.customer?.phone
+      });
+      
+      // Always fetch customer details separately if customer ID exists
+      if (order.customer && order.customer.id) {
         try {
+          console.log(`🔄 Fetching full customer details for customer ID: ${order.customer.id}`);
           const customerResponse = await shopifyAPI.get(`/customers/${order.customer.id}.json`);
-          order.customer = customerResponse.data.customer;
+          const fullCustomer = customerResponse.data.customer;
+          
+          console.log(`✅ Full customer data:`, {
+            id: fullCustomer.id,
+            email: fullCustomer.email,
+            phone: fullCustomer.phone,
+            default_address_phone: fullCustomer.default_address?.phone
+          });
+          
+          // Merge customer data into order
+          order.customer = fullCustomer;
+          
+          // Also set top-level email and phone if missing
+          if (!order.email && fullCustomer.email) {
+            order.email = fullCustomer.email;
+          }
+          if (!order.phone && fullCustomer.phone) {
+            order.phone = fullCustomer.phone;
+          }
+          if (!order.contact_email && fullCustomer.email) {
+            order.contact_email = fullCustomer.email;
+          }
+          
         } catch (err) {
-          console.log('Could not fetch customer details:', err.message);
+          console.error('❌ Could not fetch customer details:', err.message);
         }
       }
+      
+      console.log(`📧 Final contact info for ${orderName}:`, {
+        email: order.email,
+        contact_email: order.contact_email,
+        customer_email: order.customer?.email
+      });
       
       return order;
     }
