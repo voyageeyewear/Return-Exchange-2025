@@ -1,0 +1,68 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                   RETURN & EXCHANGE SYSTEM                             ║
+║                        Quick Start Guide                               ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+📦 INSTALLATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1: Install dependencies
+  npm install
+  cd frontend && npm install && cd ..
+
+Step 2: Start backend (Terminal 1)
+  npm start
+
+Step 3: Start frontend (Terminal 2)
+  cd frontend
+  npm start
+
+✅ Done! Open http://localhost:3000
+
+
+🧪 TEST THE SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+USER SIDE:
+1. Go to: http://localhost:3000
+2. Click "Start Return/Exchange"
+3. Enter: ORD-2025-001 / customer@example.com
+4. Submit a return request
+
+ADMIN SIDE:
+1. Go to: http://localhost:3000/admin
+2. Login: admin@example.com / admin123
+3. View and manage requests
+
+
+📋 SAMPLE DATA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Order 1: ORD-2025-001 / customer@example.com
+Order 2: ORD-2025-002 / jane@example.com
+Admin:   admin@example.com / admin123
+
+
+📚 DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+README.md              - Complete system documentation
+SETUP_GUIDE.md         - Detailed setup instructions
+API_DOCUMENTATION.md   - API endpoints and examples
+DEPLOYMENT.md          - Production deployment guide
+
+
+🔧 CONFIGURATION (Optional)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Edit .env file to configure:
+- Admin credentials
+- Email notifications (Gmail)
+- JWT secret key
+
+
+❓ NEED HELP?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Check README.md for troubleshooting and detailed documentation.
+
