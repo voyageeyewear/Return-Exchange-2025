@@ -9,7 +9,7 @@
     "client": "cd frontend && npm start",
     "dev:all": "concurrently \"npm run dev\" \"npm run client\"",
     "build": "cd frontend && npm ci && npm run build",
-    "postinstall": "if [ \"$NODE_ENV\" = \"production\" ]; then cd frontend && npm ci && npm run build; fi"
+    "postinstall": "node scripts/postinstall.js"
   },
   "keywords": [
     "return",
