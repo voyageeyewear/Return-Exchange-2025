@@ -22,14 +22,25 @@ if (!fs.existsSync(uploadsDir)) {
 app.use('/uploads', express.static(uploadsDir));
 app.use('/images', express.static(path.join(__dirname, '../public/images')));
 
-// Initialize database
-const db = require('./database');
+// Initialize database with error handling
+let db;
+try {
+  db = require('./database');
+  console.log('✅ Database module loaded');
+} catch (err) {
+  console.error('❌ Database initialization error:', err.message);
+  // Continue without database - API will return errors
+}
 
 // Verify Shopify connection (non-blocking)
-const { verifyShopifyConnection } = require('./services/shopify');
-verifyShopifyConnection().catch(err => {
-  console.warn('⚠️ Shopify connection failed (will retry on API calls):', err.message);
-});
+try {
+  const { verifyShopifyConnection } = require('./services/shopify');
+  verifyShopifyConnection().catch(err => {
+    console.warn('⚠️ Shopify connection failed (will retry on API calls):', err.message);
+  });
+} catch (err) {
+  console.error('⚠️ Shopify service error:', err.message);
+}
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -77,14 +88,30 @@ if (process.env.NODE_ENV === 'production') {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('❌ Error:', err.stack);
   res.status(500).json({ error: 'Something went wrong!', message: err.message });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('💥 Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log('='.repeat(60));
   console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   console.log(`📦 API available at http://0.0.0.0:${PORT}/api`);
   console.log(`🔐 Admin login: ${process.env.ADMIN_EMAIL || 'admin@example.com'}`);
   console.log(`🌍 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📁 Working directory: ${__dirname}`);
+  console.log('='.repeat(60));
+});
+
+server.on('error', (err) => {
+  console.error('❌ Server error:', err);
 });
 

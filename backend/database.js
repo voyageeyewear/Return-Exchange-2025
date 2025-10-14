@@ -5,15 +5,29 @@ const fs = require('fs');
 
 // Use /data volume on Railway if available, otherwise use local directory
 const dataDir = fs.existsSync('/data') ? '/data' : path.join(__dirname, '..');
+
+// Ensure directory exists and is writable
+try {
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+} catch (err) {
+  console.error('⚠️ Cannot create data directory:', err.message);
+}
+
 const dbPath = path.join(dataDir, 'database.db');
 
 console.log(`📁 Database path: ${dbPath}`);
+console.log(`📂 Data directory: ${dataDir}`);
+console.log(`✅ Directory exists: ${fs.existsSync(dataDir)}`);
+console.log(`✅ Directory writable: ${fs.accessSync ? 'checking...' : 'unknown'}`);
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('❌ Database connection error:', err.message);
+    console.error('   This may cause authentication issues');
   } else {
-    console.log('✅ Database connected');
+    console.log('✅ Database connected successfully');
   }
 });
 
