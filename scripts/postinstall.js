@@ -20,7 +20,8 @@ if (process.env.NODE_ENV === 'production') {
     }
     
     console.log('📦 Installing frontend dependencies...');
-    execSync('npm ci', { 
+    // Use npm install instead of npm ci for better compatibility
+    execSync('npm install --production=false', { 
       cwd: frontendDir, 
       stdio: 'inherit' 
     });
