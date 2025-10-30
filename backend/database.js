@@ -56,12 +56,16 @@ db.serialize(() => {
     FOREIGN KEY (order_id) REFERENCES orders(id)
   )`);
 
-  // Return/Exchange requests table
+  // Return/Exchange requests table (Shopify integrated with exchange product)
   db.run(`CREATE TABLE IF NOT EXISTS return_requests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     request_id TEXT UNIQUE NOT NULL,
-    order_id INTEGER NOT NULL,
-    order_item_id INTEGER NOT NULL,
+    order_number TEXT NOT NULL,
+    shopify_order_id TEXT,
+    shopify_item_id TEXT NOT NULL,
+    product_name TEXT NOT NULL,
+    product_sku TEXT,
+    product_price REAL,
     customer_name TEXT NOT NULL,
     customer_email TEXT NOT NULL,
     customer_mobile TEXT,
@@ -69,13 +73,25 @@ db.serialize(() => {
     reason TEXT NOT NULL,
     other_reason TEXT,
     exchange_details TEXT,
+    exchange_product_id TEXT,
+    exchange_product_name TEXT,
+    exchange_product_sku TEXT,
+    exchange_product_price REAL,
+    price_difference REAL DEFAULT 0,
+    payment_status TEXT DEFAULT 'Not Required',
+    payment_method TEXT,
+    payment_transaction_id TEXT,
+    payment_date DATETIME,
+    refund_amount REAL DEFAULT 0,
+    credit_option TEXT DEFAULT 'next_order',
+    discount_code TEXT,
+    discount_code_status TEXT DEFAULT 'Active',
+    discount_code_expiry DATETIME,
     image_path TEXT,
     status TEXT DEFAULT 'Pending',
     admin_notes TEXT,
     submitted_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME,
-    FOREIGN KEY (order_id) REFERENCES orders(id),
-    FOREIGN KEY (order_item_id) REFERENCES order_items(id)
+    updated_date DATETIME
   )`);
 
   // Status history table
@@ -116,41 +132,7 @@ db.serialize(() => {
     });
   });
 
-  // Insert sample orders for testing
-  db.get('SELECT COUNT(*) as count FROM orders', (err, row) => {
-    if (row.count === 0) {
-      // Sample order 1
-      db.run(`INSERT INTO orders (order_number, customer_email, customer_mobile, customer_name, order_date) 
-              VALUES ('ORD-2025-001', 'customer@example.com', '+1234567890', 'John Doe', '2025-10-01')`, 
-        function(err) {
-          if (!err) {
-            const orderId = this.lastID;
-            db.run(`INSERT INTO order_items (order_id, product_name, product_image, sku, quantity, price) VALUES 
-              (?, 'Classic Aviator Sunglasses', '/images/aviator.jpg', 'SKU-AV-001', 1, 149.99),
-              (?, 'Round Frame Eyeglasses', '/images/round.jpg', 'SKU-RF-002', 2, 89.99)`,
-              [orderId, orderId]
-            );
-          }
-        }
-      );
-
-      // Sample order 2
-      db.run(`INSERT INTO orders (order_number, customer_email, customer_mobile, customer_name, order_date) 
-              VALUES ('ORD-2025-002', 'jane@example.com', '+0987654321', 'Jane Smith', '2025-10-05')`, 
-        function(err) {
-          if (!err) {
-            const orderId = this.lastID;
-            db.run(`INSERT INTO order_items (order_id, product_name, product_image, sku, quantity, price) VALUES 
-              (?, 'Sport Sunglasses', '/images/sport.jpg', 'SKU-SP-003', 1, 199.99)`,
-              [orderId]
-            );
-          }
-        }
-      );
-
-      console.log('✅ Sample orders created for testing');
-    }
-  });
+  // Demo data removed - using Shopify integration for real orders
 });
 
 module.exports = db;

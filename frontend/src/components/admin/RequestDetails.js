@@ -245,7 +245,7 @@ function RequestDetails() {
               
               {request.exchange_details && (
                 <div className="detail-row">
-                  <strong>Exchange Details:</strong>
+                  <strong>Exchange Notes:</strong>
                   <span>{request.exchange_details}</span>
                 </div>
               )}
@@ -266,6 +266,203 @@ function RequestDetails() {
                 </div>
               )}
             </div>
+
+            {/* Exchange Product Information */}
+            {request.action_type === 'Exchange' && request.exchange_product_name && (
+              <div className="admin-card" style={{ background: '#f0f9ff', border: '2px solid #0ea5e9' }}>
+                <h2 style={{ color: '#0c4a6e' }}>🔄 Exchange Product</h2>
+                
+                <div className="detail-row">
+                  <strong>Exchange Product:</strong>
+                  <span>{request.exchange_product_name}</span>
+                </div>
+                
+                {request.exchange_product_sku && (
+                  <div className="detail-row">
+                    <strong>SKU:</strong>
+                    <span>{request.exchange_product_sku}</span>
+                  </div>
+                )}
+                
+                {request.exchange_product_price && (
+                  <div className="detail-row">
+                    <strong>Price:</strong>
+                    <span>₹{parseFloat(request.exchange_product_price).toFixed(2)}</span>
+                  </div>
+                )}
+                
+                {request.price_difference !== undefined && request.price_difference !== 0 && (
+                  <div className="detail-row">
+                    <strong>Price Difference:</strong>
+                    <span style={{ 
+                      color: request.price_difference > 0 ? '#dc2626' : '#059669',
+                      fontWeight: '600',
+                      fontSize: '16px'
+                    }}>
+                      {request.price_difference > 0 ? '+' : ''}₹{parseFloat(request.price_difference).toFixed(2)}
+                      {request.price_difference > 0 ? ' (Customer pays extra)' : ' (Refund to customer)'}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Payment Information */}
+            {request.payment_status && request.payment_status !== 'Not Required' && (
+              <div className="admin-card" style={{ 
+                background: request.payment_status === 'Paid' ? '#d1fae5' : '#fef3c7',
+                border: `2px solid ${request.payment_status === 'Paid' ? '#10b981' : '#f59e0b'}`
+              }}>
+                <h2 style={{ color: request.payment_status === 'Paid' ? '#065f46' : '#92400e' }}>
+                  💳 Payment Information
+                </h2>
+                
+                <div className="detail-row">
+                  <strong>Payment Status:</strong>
+                  <span 
+                    className="status-badge"
+                    style={{ 
+                      background: request.payment_status === 'Paid' ? '#10b981' : '#f59e0b',
+                      color: 'white'
+                    }}
+                  >
+                    {request.payment_status}
+                  </span>
+                </div>
+                
+                {request.payment_method && (
+                  <div className="detail-row">
+                    <strong>Payment Method:</strong>
+                    <span>{request.payment_method}</span>
+                  </div>
+                )}
+                
+                {request.payment_transaction_id && (
+                  <div className="detail-row">
+                    <strong>Transaction ID:</strong>
+                    <span style={{ fontFamily: 'monospace', fontSize: '14px' }}>
+                      {request.payment_transaction_id}
+                    </span>
+                  </div>
+                )}
+                
+                {request.payment_date && (
+                  <div className="detail-row">
+                    <strong>Payment Date:</strong>
+                    <span>{new Date(request.payment_date).toLocaleString()}</span>
+                  </div>
+                )}
+                
+                {request.price_difference > 0 && (
+                  <div className="detail-row">
+                    <strong>Amount Paid:</strong>
+                    <span style={{ fontSize: '18px', fontWeight: '600', color: '#065f46' }}>
+                      ₹{parseFloat(request.price_difference).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Discount Code / Refund Information */}
+            {request.refund_amount && request.refund_amount > 0 && (
+              <div className="admin-card" style={{ 
+                background: '#d1fae5',
+                border: '2px solid #10b981'
+              }}>
+                <h2 style={{ color: '#065f46' }}>
+                  🎁 Discount Code / Refund Information
+                </h2>
+                
+                <div className="detail-row">
+                  <strong>Refund Amount:</strong>
+                  <span style={{ 
+                    fontSize: '18px', 
+                    fontWeight: '600', 
+                    color: '#059669' 
+                  }}>
+                    ₹{parseFloat(request.refund_amount).toFixed(2)}
+                  </span>
+                </div>
+                
+                {request.credit_option && (
+                  <div className="detail-row">
+                    <strong>Credit Option:</strong>
+                    <span 
+                      className="status-badge"
+                      style={{ 
+                        background: request.credit_option === 'next_order' ? '#667eea' : '#10b981',
+                        color: 'white'
+                      }}
+                    >
+                      {request.credit_option === 'next_order' ? '🎁 Discount Code for Next Order' : '💳 Applied to Exchange'}
+                    </span>
+                  </div>
+                )}
+                
+                {request.discount_code && (
+                  <>
+                    <div className="detail-row">
+                      <strong>Discount Code:</strong>
+                      <span style={{ 
+                        fontFamily: 'monospace', 
+                        fontSize: '18px', 
+                        fontWeight: 'bold',
+                        color: '#065f46',
+                        letterSpacing: '1px',
+                        background: '#f0fdf4',
+                        padding: '8px 12px',
+                        borderRadius: '6px',
+                        display: 'inline-block'
+                      }}>
+                        {request.discount_code}
+                      </span>
+                    </div>
+                    
+                    <div className="detail-row">
+                      <strong>Code Status:</strong>
+                      <span 
+                        className="status-badge"
+                        style={{ 
+                          background: request.discount_code_status === 'Active' ? '#10b981' : '#f59e0b',
+                          color: 'white'
+                        }}
+                      >
+                        {request.discount_code_status || 'Active'}
+                      </span>
+                    </div>
+                    
+                    {request.discount_code_expiry && (
+                      <div className="detail-row">
+                        <strong>Expires On:</strong>
+                        <span>{new Date(request.discount_code_expiry).toLocaleDateString()}</span>
+                        <span style={{ 
+                          marginLeft: '10px',
+                          fontSize: '12px',
+                          color: '#059669'
+                        }}>
+                          ({Math.ceil((new Date(request.discount_code_expiry) - new Date()) / (1000 * 60 * 60 * 24))} days remaining)
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
+                
+                <div style={{
+                  marginTop: '15px',
+                  padding: '12px',
+                  background: '#f0fdf4',
+                  borderRadius: '6px',
+                  border: '1px solid #10b981'
+                }}>
+                  <p style={{ margin: 0, fontSize: '13px', color: '#065f46' }}>
+                    {request.credit_option === 'next_order' && request.discount_code 
+                      ? '💡 This discount code has been sent to the customer\'s email and can be used for future purchases.'
+                      : '💡 The credit has been applied to this exchange transaction as requested by the customer.'}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right Column - Status Management */}

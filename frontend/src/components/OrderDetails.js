@@ -69,18 +69,19 @@ function OrderDetails() {
             order.items.map((item, index) => (
               <div key={index} className="order-item">
                 <img 
-                  src={item.product_image || '/placeholder-image.jpg'} 
+                  src={item.product_image} 
                   alt={item.product_name}
                   className="item-image"
                   onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/100?text=No+Image';
+                    e.target.onerror = null; // Prevent infinite loop
+                    e.target.src = `https://via.placeholder.com/100/f0f0f0/666666?text=No+Image`;
                   }}
                 />
                 <div className="item-details">
                   <h4>{item.product_name}</h4>
                   <p><strong>SKU:</strong> {item.sku}</p>
                   <p><strong>Quantity:</strong> {item.quantity}</p>
-                  <p><strong>Price:</strong> ${parseFloat(item.price).toFixed(2)}</p>
+                  <p><strong>Price:</strong> ₹{parseFloat(item.price).toFixed(2)}</p>
                 </div>
                 <div className="item-actions">
                   <button 

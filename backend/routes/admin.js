@@ -8,46 +8,39 @@ const router = express.Router();
 // All admin routes require authentication
 router.use(authenticateToken);
 
-// Get all return/exchange requests
+// Get all return/exchange requests (Shopify integrated)
 router.get('/requests', (req, res) => {
   const { status, search, limit = 50, offset = 0 } = req.query;
   
-  let query = `
-    SELECT rr.*, oi.product_name, oi.product_image, oi.sku, o.order_number
-    FROM return_requests rr
-    JOIN order_items oi ON rr.order_item_id = oi.id
-    JOIN orders o ON rr.order_id = o.id
-    WHERE 1=1
-  `;
-  
+  let query = `SELECT * FROM return_requests WHERE 1=1`;
   const params = [];
   
   if (status && status !== 'All') {
-    query += ' AND rr.status = ?';
+    query += ' AND status = ?';
     params.push(status);
   }
   
   if (search) {
-    query += ' AND (rr.request_id LIKE ? OR rr.customer_name LIKE ? OR o.order_number LIKE ?)';
+    query += ' AND (request_id LIKE ? OR customer_name LIKE ? OR order_number LIKE ? OR product_name LIKE ?)';
     const searchPattern = `%${search}%`;
-    params.push(searchPattern, searchPattern, searchPattern);
+    params.push(searchPattern, searchPattern, searchPattern, searchPattern);
   }
   
-  query += ' ORDER BY rr.submitted_date DESC LIMIT ? OFFSET ?';
+  query += ' ORDER BY submitted_date DESC LIMIT ? OFFSET ?';
   params.push(parseInt(limit), parseInt(offset));
 
   db.all(query, params, (err, requests) => {
     if (err) {
-      console.error(err);
+      console.error('❌ Error fetching requests:', err);
       return res.status(500).json({ error: 'Database error' });
     }
 
     // Get total count for pagination
-    let countQuery = 'SELECT COUNT(*) as total FROM return_requests rr WHERE 1=1';
+    let countQuery = 'SELECT COUNT(*) as total FROM return_requests WHERE 1=1';
     const countParams = [];
     
     if (status && status !== 'All') {
-      countQuery += ' AND rr.status = ?';
+      countQuery += ' AND status = ?';
       countParams.push(status);
     }
 
@@ -62,19 +55,11 @@ router.get('/requests', (req, res) => {
   });
 });
 
-// Get single request details
+// Get single request details (Shopify integrated)
 router.get('/requests/:id', (req, res) => {
-  const query = `
-    SELECT rr.*, oi.product_name, oi.product_image, oi.sku, oi.quantity, oi.price,
-           o.order_number, o.order_date
-    FROM return_requests rr
-    JOIN order_items oi ON rr.order_item_id = oi.id
-    JOIN orders o ON rr.order_id = o.id
-    WHERE rr.id = ?
-  `;
-
-  db.get(query, [req.params.id], (err, request) => {
+  db.get('SELECT * FROM return_requests WHERE id = ?', [req.params.id], (err, request) => {
     if (err) {
+      console.error('❌ Error fetching request:', err);
       return res.status(500).json({ error: 'Database error' });
     }
     if (!request) {

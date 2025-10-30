@@ -126,6 +126,28 @@ async function getShopifyProducts(limit = 50) {
   }
 }
 
+// Get product by ID
+async function getShopifyProduct(productId) {
+  try {
+    const response = await shopifyAPI.get(`/products/${productId}.json`);
+    return response.data.product;
+  } catch (error) {
+    console.error(`Error fetching product ${productId}:`, error.message);
+    return null;
+  }
+}
+
+// Get variant by ID (includes image)
+async function getShopifyVariant(variantId) {
+  try {
+    const response = await shopifyAPI.get(`/variants/${variantId}.json`);
+    return response.data.variant;
+  } catch (error) {
+    console.error(`Error fetching variant ${variantId}:`, error.message);
+    return null;
+  }
+}
+
 // Verify Shopify connection
 async function verifyShopifyConnection() {
   try {
@@ -143,6 +165,8 @@ module.exports = {
   getShopifyOrderByName,
   getShopifyOrderById,
   getShopifyProducts,
+  getShopifyProduct,
+  getShopifyVariant,
   verifyShopifyConnection
 };
 

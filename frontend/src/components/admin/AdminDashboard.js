@@ -208,11 +208,60 @@ function AdminDashboard() {
                       <td><strong>{request.request_id}</strong></td>
                       <td>{request.customer_name}</td>
                       <td>{request.order_number}</td>
-                      <td>{request.product_name}</td>
                       <td>
-                        <span className={`badge badge-${request.action_type.toLowerCase()}`}>
-                          {request.action_type}
-                        </span>
+                        <div>
+                          <div>{request.product_name}</div>
+                          {request.action_type === 'Exchange' && request.exchange_product_name && (
+                            <div style={{ 
+                              marginTop: '5px', 
+                              padding: '4px 8px', 
+                              background: '#f0f9ff', 
+                              borderRadius: '4px',
+                              fontSize: '0.85em',
+                              border: '1px solid #0ea5e9'
+                            }}>
+                              🔄 → {request.exchange_product_name}
+                              {request.price_difference > 0 && (
+                                <span style={{ color: '#dc2626', fontWeight: '600', marginLeft: '5px' }}>
+                                  (+₹{parseFloat(request.price_difference).toFixed(2)})
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <span className={`badge badge-${request.action_type.toLowerCase()}`}>
+                            {request.action_type}
+                          </span>
+                          {request.payment_status === 'Paid' && (
+                            <div style={{ marginTop: '4px' }}>
+                              <span style={{ 
+                                fontSize: '0.75em', 
+                                background: '#10b981', 
+                                color: 'white', 
+                                padding: '2px 6px', 
+                                borderRadius: '3px' 
+                              }}>
+                                💳 Paid
+                              </span>
+                            </div>
+                          )}
+                          {request.refund_amount > 0 && request.discount_code && (
+                            <div style={{ marginTop: '4px' }}>
+                              <span style={{ 
+                                fontSize: '0.75em', 
+                                background: '#059669', 
+                                color: 'white', 
+                                padding: '2px 6px', 
+                                borderRadius: '3px' 
+                              }}>
+                                🎁 Code: {request.discount_code}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td>{request.reason}</td>
                       <td>{new Date(request.submitted_date).toLocaleDateString()}</td>

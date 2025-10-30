@@ -1,5 +1,5 @@
 const express = require('express');
-const { getShopifyOrderByName } = require('../services/shopify');
+const { getShopifyOrderByName, getShopifyProduct } = require('../services/shopify');
 
 const router = express.Router();
 
@@ -90,17 +90,65 @@ router.post('/verify', async (req, res) => {
       customerMobile: customerPhone || billingPhone || shippingPhone,
       orderDate: shopifyOrder.created_at,
       totalPrice: shopifyOrder.total_price,
-      items: shopifyOrder.line_items.map(item => ({
-        id: item.id,
-        product_name: item.name,
-        product_image: item.properties?.find(p => p.name === '_image')?.value || 
-                      (item.image ? item.image : 
-                      `https://via.placeholder.com/100?text=${encodeURIComponent(item.name)}`),
-        sku: item.sku || item.variant_id || item.product_id,
-        quantity: item.quantity,
-        price: item.price,
-        variant_id: item.variant_id,
-        product_id: item.product_id
+      items: await Promise.all(shopifyOrder.line_items.map(async (item) => {
+        // Extract image URL from line item or fetch from product
+        let imageUrl = null;
+        
+        // Try line item image first
+        if (item.properties) {
+          const imgProp = item.properties.find(p => p.name === '_image');
+          if (imgProp) imageUrl = imgProp.value;
+        }
+        
+        if (!imageUrl && item.image) {
+          imageUrl = typeof item.image === 'string' ? item.image : item.image.src;
+        }
+        
+        // If no image in line item, fetch from product API
+        if (!imageUrl && item.product_id) {
+          try {
+            console.log(`🖼️  Fetching product ${item.product_id} for image...`);
+            const product = await getShopifyProduct(item.product_id);
+            
+            if (product && product.images && product.images.length > 0) {
+              console.log(`   ✅ Found ${product.images.length} images for product ${item.product_id}`);
+              
+              // Find image for this specific variant or use first image
+              if (item.variant_id && product.variants) {
+                const variant = product.variants.find(v => v.id === item.variant_id);
+                if (variant && variant.image_id) {
+                  const variantImage = product.images.find(img => img.id === variant.image_id);
+                  imageUrl = variantImage ? variantImage.src : product.images[0].src;
+                } else {
+                  imageUrl = product.images[0].src;
+                }
+              } else {
+                imageUrl = product.images[0].src;
+              }
+              console.log(`   📸 Using image: ${imageUrl}`);
+            } else {
+              console.log(`   ❌ No images found for product ${item.product_id}`);
+            }
+          } catch (err) {
+            console.error(`   ❌ Failed to fetch product image for ${item.product_id}:`, err.message);
+          }
+        }
+        
+        // Final fallback
+        if (!imageUrl) {
+          imageUrl = `https://via.placeholder.com/100/f0f0f0/666666?text=${encodeURIComponent(item.name.substring(0, 20))}`;
+        }
+
+        return {
+          id: item.id,
+          product_name: item.name,
+          product_image: imageUrl,
+          sku: item.sku || item.variant_id || item.product_id,
+          quantity: item.quantity,
+          price: item.price,
+          variant_id: item.variant_id,
+          product_id: item.product_id
+        };
       }))
     };
 
