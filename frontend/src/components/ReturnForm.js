@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ReturnPolicyModal from './ReturnPolicyModal';
 
 function ReturnForm() {
   const { orderId, itemId } = useParams();
@@ -34,6 +35,7 @@ function ReturnForm() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const [creditOption, setCreditOption] = useState('next_order'); // 'next_order' or 'apply_now'
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
 
   useEffect(() => {
     const storedOrder = sessionStorage.getItem('orderData');
@@ -45,6 +47,11 @@ function ReturnForm() {
       // Find the selected item
       const item = orderData.items.find(i => i.id === parseInt(itemId));
       setSelectedItem(item);
+
+      // Show policy modal if return window has expired
+      if (orderData.isWithinReturnWindow === false) {
+        setShowPolicyModal(true);
+      }
     } else {
       navigate('/verify');
     }
@@ -204,6 +211,12 @@ function ReturnForm() {
     e.preventDefault();
     setError('');
 
+    // Validate return window
+    if (order && order.isWithinReturnWindow === false) {
+      setError('The 3-day return/exchange window has expired for this order. Please contact customer service for assistance.');
+      return;
+    }
+
     // Validate exchange product selection
     if (formData.actionType === 'Exchange') {
       if (formData.reason === 'Exchange with different items' && !selectedExchangeProduct) {
@@ -326,6 +339,54 @@ function ReturnForm() {
         {error && (
           <div className="alert alert-error">
             {error}
+          </div>
+        )}
+
+        {/* Return Window Status */}
+        {order && order.isWithinReturnWindow !== undefined && (
+          <div className={`return-window-status ${order.isWithinReturnWindow ? 'eligible' : 'expired'}`}>
+            {order.isWithinReturnWindow ? (
+              <div style={{
+                background: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)',
+                padding: '15px',
+                borderRadius: '8px',
+                border: '2px solid #10b981',
+                marginBottom: '20px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '20px', marginRight: '8px' }}>✅</div>
+                  <h4 style={{ margin: 0, color: '#065f46' }}>Return/Exchange Eligible</h4>
+                </div>
+                <p style={{ margin: '5px 0', color: '#059669', fontSize: '14px' }}>
+                  You can return or exchange this item. 
+                  {order.daysSinceOrder !== undefined && (
+                    <span> {order.daysSinceOrder === 0 ? 'Ordered today' : `${order.daysSinceOrder} day${order.daysSinceOrder === 1 ? '' : 's'} since order`}.</span>
+                  )}
+                </p>
+              </div>
+            ) : (
+              <div style={{
+                background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+                padding: '15px',
+                borderRadius: '8px',
+                border: '2px solid #ef4444',
+                marginBottom: '20px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '20px', marginRight: '8px' }}>❌</div>
+                  <h4 style={{ margin: 0, color: '#dc2626' }}>Return Window Expired</h4>
+                </div>
+                <p style={{ margin: '5px 0', color: '#b91c1c', fontSize: '14px' }}>
+                  The 3-day return/exchange window has expired for this order.
+                  {order.daysSinceOrder !== undefined && (
+                    <span> Order was placed {order.daysSinceOrder} day{order.daysSinceOrder === 1 ? '' : 's'} ago.</span>
+                  )}
+                </p>
+                <p style={{ margin: '5px 0', fontSize: '13px', color: '#991b1b' }}>
+                  For assistance, please contact our customer service.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -812,10 +873,15 @@ function ReturnForm() {
 
           <button 
             type="submit" 
-            className="btn btn-primary btn-block"
-            disabled={loading}
+            className={`btn btn-primary btn-block ${!order?.isWithinReturnWindow ? 'btn-disabled' : ''}`}
+            disabled={loading || !order?.isWithinReturnWindow}
+            style={{
+              opacity: order?.isWithinReturnWindow ? 1 : 0.6,
+              cursor: order?.isWithinReturnWindow ? 'pointer' : 'not-allowed'
+            }}
           >
-            {loading ? 'Submitting...' : 'Submit Request'}
+            {loading ? 'Submitting...' : 
+             !order?.isWithinReturnWindow ? 'Return Window Expired' : 'Submit Request'}
           </button>
         </form>
       </div>
@@ -1254,6 +1320,17 @@ function ReturnForm() {
           </div>
         </div>
       )}
+
+      {/* Return Policy Modal */}
+      <ReturnPolicyModal
+        isOpen={showPolicyModal}
+        onClose={() => {
+          setShowPolicyModal(false);
+          navigate('/verify'); // Redirect to order verification
+        }}
+        orderDate={order?.orderDate}
+        daysSinceOrder={order?.daysSinceOrder}
+      />
     </div>
   );
 }

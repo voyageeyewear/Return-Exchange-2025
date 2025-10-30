@@ -194,6 +194,18 @@ select.form-control {
   border-color: #555;
 }
 
+.btn-disabled {
+  background: #ccc !important;
+  color: #666 !important;
+  border: 2px solid #ccc !important;
+  cursor: not-allowed !important;
+}
+
+.btn-disabled:hover {
+  background: #ccc !important;
+  border-color: #ccc !important;
+}
+
 .btn-secondary {
   background: white;
   color: #333;
@@ -461,4 +473,5 @@ select.form-control {
     width: 100%;
   }
 }
+
 

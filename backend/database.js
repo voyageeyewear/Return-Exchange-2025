@@ -87,6 +87,10 @@ db.serialize(() => {
     discount_code TEXT,
     discount_code_status TEXT DEFAULT 'Active',
     discount_code_expiry DATETIME,
+    store_credit_amount REAL DEFAULT 0,
+    store_credit_code TEXT,
+    store_credit_status TEXT DEFAULT 'Inactive',
+    store_credit_expiry DATETIME,
     image_path TEXT,
     status TEXT DEFAULT 'Pending',
     admin_notes TEXT,
@@ -104,6 +108,32 @@ db.serialize(() => {
     changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (request_id) REFERENCES return_requests(request_id)
   )`);
+
+  // Add store credit columns to existing return_requests table if they don't exist
+  db.run(`ALTER TABLE return_requests ADD COLUMN store_credit_amount REAL DEFAULT 0`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Error adding store_credit_amount column:', err);
+    }
+  });
+  
+  db.run(`ALTER TABLE return_requests ADD COLUMN store_credit_code TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Error adding store_credit_code column:', err);
+    }
+  });
+  
+  db.run(`ALTER TABLE return_requests ADD COLUMN store_credit_status TEXT DEFAULT 'Inactive'`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Error adding store_credit_status column:', err);
+    }
+  });
+  
+  db.run(`ALTER TABLE return_requests ADD COLUMN store_credit_expiry DATETIME`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Error adding store_credit_expiry column:', err);
+    }
+  });
+
 
   // Admin users table
   db.run(`CREATE TABLE IF NOT EXISTS admin_users (

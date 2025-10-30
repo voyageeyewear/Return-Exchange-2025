@@ -261,6 +261,39 @@ function AdminDashboard() {
                               </span>
                             </div>
                           )}
+                          {request.action_type === 'Return' && request.store_credit_amount > 0 && request.store_credit_code && (
+                            <div style={{ marginTop: '4px' }}>
+                              <span style={{ 
+                                fontSize: '0.75em', 
+                                background: '#7c3aed', 
+                                color: 'white', 
+                                padding: '2px 6px', 
+                                borderRadius: '3px' 
+                              }}>
+                                💳 Store Credit: {request.store_credit_code}
+                              </span>
+                              <div style={{ 
+                                fontSize: '0.7em', 
+                                color: '#6b7280', 
+                                marginTop: '2px' 
+                              }}>
+                                ₹{parseFloat(request.store_credit_amount).toFixed(2)} • {request.store_credit_status}
+                              </div>
+                            </div>
+                          )}
+                          {request.is_within_return_window !== undefined && (
+                            <div style={{ marginTop: '4px' }}>
+                              <span style={{ 
+                                fontSize: '0.75em', 
+                                background: request.is_within_return_window ? '#10b981' : '#ef4444', 
+                                color: 'white', 
+                                padding: '2px 6px', 
+                                borderRadius: '3px' 
+                              }}>
+                                {request.is_within_return_window ? '✅ Within 3 days' : '❌ Outside 3 days'}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td>{request.reason}</td>

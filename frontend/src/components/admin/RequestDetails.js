@@ -463,6 +463,89 @@ function RequestDetails() {
                 </div>
               </div>
             )}
+
+            {/* Store Credit Information */}
+            {request.action_type === 'Return' && request.store_credit_amount && request.store_credit_amount > 0 && (
+              <div className="admin-card" style={{ 
+                background: '#f3e8ff',
+                border: '2px solid #7c3aed'
+              }}>
+                <h2 style={{ color: '#5b21b6' }}>
+                  💳 Store Credit Information
+                </h2>
+                
+                <div className="detail-row">
+                  <strong>Credit Amount:</strong>
+                  <span style={{ 
+                    fontSize: '18px', 
+                    fontWeight: '600', 
+                    color: '#7c3aed' 
+                  }}>
+                    ₹{parseFloat(request.store_credit_amount).toFixed(2)}
+                  </span>
+                </div>
+                
+                {request.store_credit_code && (
+                  <>
+                    <div className="detail-row">
+                      <strong>Store Credit Code:</strong>
+                      <span style={{ 
+                        fontFamily: 'monospace', 
+                        fontSize: '18px', 
+                        fontWeight: 'bold',
+                        color: '#5b21b6',
+                        letterSpacing: '1px',
+                        background: '#faf5ff',
+                        padding: '8px 12px',
+                        borderRadius: '6px',
+                        border: '2px solid #7c3aed'
+                      }}>
+                        {request.store_credit_code}
+                      </span>
+                    </div>
+                    
+                    <div className="detail-row">
+                      <strong>Credit Status:</strong>
+                      <span 
+                        className="status-badge"
+                        style={{ 
+                          background: request.store_credit_status === 'Active' ? '#7c3aed' : '#f59e0b',
+                          color: 'white'
+                        }}
+                      >
+                        {request.store_credit_status || 'Inactive'}
+                      </span>
+                    </div>
+                    
+                    {request.store_credit_expiry && (
+                      <div className="detail-row">
+                        <strong>Expires On:</strong>
+                        <span>{new Date(request.store_credit_expiry).toLocaleDateString()}</span>
+                        <span style={{ 
+                          marginLeft: '10px',
+                          fontSize: '12px',
+                          color: '#7c3aed'
+                        }}>
+                          ({Math.ceil((new Date(request.store_credit_expiry) - new Date()) / (1000 * 60 * 60 * 24))} days remaining)
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
+                
+                <div style={{
+                  marginTop: '15px',
+                  padding: '12px',
+                  background: '#faf5ff',
+                  borderRadius: '6px',
+                  border: '1px solid #7c3aed'
+                }}>
+                  <p style={{ margin: 0, fontSize: '13px', color: '#5b21b6' }}>
+                    💡 This store credit has been generated for the approved return and sent to the customer's email.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right Column - Status Management */}

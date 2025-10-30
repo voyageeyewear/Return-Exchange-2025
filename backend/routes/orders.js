@@ -79,6 +79,24 @@ router.post('/verify', async (req, res) => {
       });
     }
 
+    // Check if order is within 3-day return window
+    const orderDate = new Date(shopifyOrder.created_at);
+    const currentDate = new Date();
+    
+    // Normalize dates to start of day for accurate day calculation
+    const orderDateNormalized = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
+    const currentDateNormalized = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+    
+    const daysDifference = Math.floor((currentDateNormalized - orderDateNormalized) / (1000 * 60 * 60 * 24));
+    const isWithinReturnWindow = daysDifference <= 3;
+    
+    console.log(`📅 Order date: ${orderDate.toISOString()}`);
+    console.log(`📅 Order date normalized: ${orderDateNormalized.toISOString()}`);
+    console.log(`📅 Current date: ${currentDate.toISOString()}`);
+    console.log(`📅 Current date normalized: ${currentDateNormalized.toISOString()}`);
+    console.log(`📅 Days since order: ${daysDifference}`);
+    console.log(`📅 Within return window: ${isWithinReturnWindow}`);
+
     // Format order data
     const formattedOrder = {
       id: shopifyOrder.id,
@@ -90,6 +108,9 @@ router.post('/verify', async (req, res) => {
       customerMobile: customerPhone || billingPhone || shippingPhone,
       orderDate: shopifyOrder.created_at,
       totalPrice: shopifyOrder.total_price,
+      isWithinReturnWindow: isWithinReturnWindow,
+      daysSinceOrder: daysDifference,
+      returnWindowExpiry: new Date(orderDate.getTime() + (3 * 24 * 60 * 60 * 1000)).toISOString(),
       items: await Promise.all(shopifyOrder.line_items.map(async (item) => {
         // Extract image URL from line item or fetch from product
         let imageUrl = null;
