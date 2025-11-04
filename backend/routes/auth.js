@@ -5,6 +5,9 @@ const db = require('../database');
 
 const router = express.Router();
 
+// Use same JWT_SECRET as middleware
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-change-in-production';
+
 // Admin login
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
@@ -34,12 +37,11 @@ router.post('/login', (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-key-change-in-production';
     console.log('🔑 JWT_SECRET exists:', !!process.env.JWT_SECRET);
 
     const token = jwt.sign(
       { id: user.id, email: user.email, name: user.name },
-      jwtSecret,
+      JWT_SECRET,
       { expiresIn: '24h' }
     );
 
@@ -66,7 +68,7 @@ router.get('/verify', (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     res.json({ valid: true, user: decoded });
   } catch (error) {
     res.status(403).json({ error: 'Invalid token', valid: false });
