@@ -134,6 +134,13 @@ db.serialize(() => {
     }
   });
 
+  // Add product_image column for storing Shopify product images
+  db.run(`ALTER TABLE return_requests ADD COLUMN product_image TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Error adding product_image column:', err);
+    }
+  });
+
 
   // Admin users table
   db.run(`CREATE TABLE IF NOT EXISTS admin_users (

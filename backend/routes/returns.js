@@ -73,6 +73,7 @@ router.get('/exchange-products', async (req, res) => {
 router.post('/submit', upload.single('image'), (req, res) => {
   const { 
     orderNumber, shopifyOrderId, shopifyItemId, productName, productSku, productPrice,
+    productImage,
     customerName, customerEmail, customerMobile, actionType, reason, 
     otherReason, exchangeDetails,
     // Exchange product fields
@@ -113,21 +114,21 @@ router.post('/submit', upload.single('image'), (req, res) => {
   const query = `
     INSERT INTO return_requests (
       request_id, order_number, shopify_order_id, shopify_item_id, 
-      product_name, product_sku, product_price,
+      product_name, product_sku, product_price, product_image,
       customer_name, customer_email, customer_mobile, 
       action_type, reason, other_reason, exchange_details,
       exchange_product_id, exchange_product_name, exchange_product_sku, exchange_product_price,
       price_difference, payment_status, payment_method, payment_transaction_id,
       payment_date, refund_amount, credit_option, discount_code, discount_code_status, discount_code_expiry,
       image_path
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const paymentDate = paymentStatus === 'Paid' ? new Date().toISOString() : null;
 
   db.run(query, [
     requestId, orderNumber, shopifyOrderId, shopifyItemId,
-    productName, productSku, productPrice,
+    productName, productSku, productPrice, productImage || null,
     customerName, customerEmail, customerMobile,
     actionType, reason, otherReason, exchangeDetails,
     exchangeProductId || null, exchangeProductName || null, exchangeProductSku || null, exchangeProductPrice || null,
