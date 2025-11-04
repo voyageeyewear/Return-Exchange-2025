@@ -244,12 +244,12 @@ function ReturnForm() {
 
     // Validate exchange product selection
     if (formData.actionType === 'Exchange') {
-      if (formData.reason === 'Exchange with different items' && !selectedExchangeProduct) {
-        setError('Please select a product to exchange with');
+      if (!formData.exchangeType) {
+        setError('Please select an exchange type');
         return;
       }
-      if (formData.reason === 'Exchange' && !selectedExchangeProduct) {
-        setError('Exchange product not set. Please try again.');
+      if (!selectedExchangeProduct) {
+        setError('Please select a product to exchange with');
         return;
       }
     }
@@ -556,7 +556,7 @@ function ReturnForm() {
           )}
 
           {/* Exchange Product Selection - Only for "Exchange with different items" */}
-          {formData.actionType === 'Exchange' && formData.reason === 'Exchange with different items' && (
+          {formData.actionType === 'Exchange' && formData.exchangeType === 'different' && (
             <>
               <div className="form-group">
                 <label>Select Exchange Product *</label>
@@ -585,7 +585,7 @@ function ReturnForm() {
               </div>
 
           {/* Exchange with Same Product Confirmation */}
-          {formData.actionType === 'Exchange' && formData.reason === 'Exchange' && selectedExchangeProduct && (
+          {formData.actionType === 'Exchange' && formData.exchangeType === 'same' && selectedExchangeProduct && (
             <div style={{ 
               background: '#d1fae5', 
               padding: '15px', 
@@ -601,7 +601,7 @@ function ReturnForm() {
           )}
 
               {/* Selected Exchange Product Display - Only for different items */}
-              {formData.actionType === 'Exchange' && formData.reason === 'Exchange with different items' && selectedExchangeProduct && (
+              {formData.actionType === 'Exchange' && formData.exchangeType === 'different' && selectedExchangeProduct && (
                 <div style={{ 
                   background: '#f0f9ff', 
                   padding: window.innerWidth <= 768 ? '12px' : '15px', 
@@ -830,7 +830,7 @@ function ReturnForm() {
               )}
 
               {/* Payment Section - Only for different items */}
-              {formData.actionType === 'Exchange' && formData.reason === 'Exchange with different items' && showPayment && priceDifference > 0 && (
+              {formData.actionType === 'Exchange' && formData.exchangeType === 'different' && showPayment && priceDifference > 0 && (
                 <div style={{ 
                   background: '#fef3c7', 
                   padding: '20px', 
