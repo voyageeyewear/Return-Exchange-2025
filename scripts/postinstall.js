@@ -20,8 +20,8 @@ if (process.env.NODE_ENV === 'production') {
     }
     
     console.log('📦 Installing frontend dependencies...');
-    // Use npm install instead of npm ci for better compatibility
-    execSync('npm install --production=false', { 
+    // Use npm install with force flag for Railway compatibility
+    execSync('npm install --production=false --legacy-peer-deps', { 
       cwd: frontendDir, 
       stdio: 'inherit' 
     });

@@ -5,7 +5,6 @@ import axios from 'axios';
 function Confirmation() {
   const { requestId } = useParams();
   const [requestData, setRequestData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Fetch request details to get discount code
@@ -17,8 +16,6 @@ function Confirmation() {
         }
       } catch (err) {
         console.error('Error fetching request details:', err);
-      } finally {
-        setLoading(false);
       }
     };
 
