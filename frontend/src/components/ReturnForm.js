@@ -214,10 +214,10 @@ function ReturnForm() {
         setCurrentPage(1);
       }
     } else {
-      setFormData({
-        ...formData,
-        [name]: value
-      });
+    setFormData({
+      ...formData,
+      [name]: value
+    });
     }
   };
 
@@ -595,9 +595,9 @@ function ReturnForm() {
             </div>
           )}
 
-              {/* Selected Exchange Product Display - Only for different items */}
-              {formData.actionType === 'Exchange' && formData.exchangeType === 'different' && selectedExchangeProduct && (
-                <div style={{ 
+          {/* Selected Exchange Product Display - Only for different items */}
+          {formData.actionType === 'Exchange' && formData.exchangeType === 'different' && selectedExchangeProduct && (
+            <div style={{ 
                   background: '#f0f9ff', 
                   padding: window.innerWidth <= 768 ? '12px' : '15px', 
                   borderRadius: '8px', 
@@ -821,12 +821,12 @@ function ReturnForm() {
                       )}
                     </div>
                   )}
-                </div>
-              )}
+            </div>
+          )}
 
-              {/* Payment Section - Only for different items */}
-              {formData.actionType === 'Exchange' && formData.exchangeType === 'different' && showPayment && priceDifference > 0 && (
-                <div style={{ 
+          {/* Payment Section - Only for different items */}
+          {formData.actionType === 'Exchange' && formData.exchangeType === 'different' && showPayment && priceDifference > 0 && (
+            <div style={{ 
                   background: '#fef3c7', 
                   padding: '20px', 
                   borderRadius: '8px', 
@@ -883,9 +883,7 @@ function ReturnForm() {
                       Complete payment first, then enter the transaction ID here
                     </small>
                   </div>
-                </div>
-              )}
-            </>
+            </div>
           )}
 
           {/* Exchange Details - Show for all exchange requests */}
@@ -905,13 +903,14 @@ function ReturnForm() {
 
           {/* Image Upload */}
           <div className="form-group">
-            <label>Upload Image (Optional)</label>
+            <label>Upload Image *</label>
             <div className="file-upload">
               <input
                 type="file"
                 id="image"
                 accept="image/*"
                 onChange={handleFileChange}
+                required
               />
               <label htmlFor="image" className="file-upload-label">
                 📷 Click to upload an image (Max 5MB)
