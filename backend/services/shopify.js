@@ -4,16 +4,35 @@ const SHOPIFY_STORE_URL = process.env.SHOPIFY_STORE_URL;
 const SHOPIFY_ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
 const SHOPIFY_API_VERSION = process.env.SHOPIFY_API_VERSION || '2024-10';
 
-const shopifyAPI = axios.create({
+// Validate Shopify configuration
+if (!SHOPIFY_STORE_URL) {
+  console.error('❌ SHOPIFY_STORE_URL is not set in environment variables');
+}
+if (!SHOPIFY_ACCESS_TOKEN) {
+  console.error('❌ SHOPIFY_ACCESS_TOKEN is not set in environment variables');
+}
+
+const shopifyAPI = SHOPIFY_STORE_URL && SHOPIFY_ACCESS_TOKEN ? axios.create({
   baseURL: `https://${SHOPIFY_STORE_URL}/admin/api/${SHOPIFY_API_VERSION}`,
   headers: {
     'X-Shopify-Access-Token': SHOPIFY_ACCESS_TOKEN,
     'Content-Type': 'application/json'
   }
+}) : null;
+
+console.log('🔧 Shopify Configuration:', {
+  storeUrl: SHOPIFY_STORE_URL ? '✅ Set' : '❌ Missing',
+  accessToken: SHOPIFY_ACCESS_TOKEN ? '✅ Set' : '❌ Missing',
+  apiVersion: SHOPIFY_API_VERSION,
+  baseURL: shopifyAPI ? shopifyAPI.defaults.baseURL : 'Not configured'
 });
 
 // Get orders from Shopify
 async function getShopifyOrders(limit = 50) {
+  if (!shopifyAPI) {
+    throw new Error('Shopify API not configured. Please set SHOPIFY_STORE_URL and SHOPIFY_ACCESS_TOKEN environment variables.');
+  }
+  
   try {
     const response = await shopifyAPI.get('/orders.json', {
       params: {
@@ -24,7 +43,7 @@ async function getShopifyOrders(limit = 50) {
     });
     return response.data.orders;
   } catch (error) {
-    console.error('Error fetching Shopify orders:', error.message);
+    console.error('❌ Error fetching Shopify orders:', error.message);
     throw error;
   }
 }
