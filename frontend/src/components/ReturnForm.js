@@ -207,6 +207,12 @@ function ReturnForm() {
         setPriceDifference(0);
         setShowPayment(false);
       }
+      
+      // If selecting "different", open product modal immediately
+      if (value === 'different') {
+        setShowProductModal(true);
+        setCurrentPage(1);
+      }
     } else {
       setFormData({
         ...formData,
@@ -556,33 +562,22 @@ function ReturnForm() {
           )}
 
           {/* Exchange Product Selection - Only for "Exchange with different items" */}
-          {formData.actionType === 'Exchange' && formData.exchangeType === 'different' && (
-            <>
-              <div className="form-group">
-                <label>Select Exchange Product *</label>
-                {loadingProducts ? (
-                  <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
-                    Loading products...
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-block"
-                    onClick={() => {
-                      setShowProductModal(true);
-                      setCurrentPage(1);
-                    }}
-                    style={{ 
-                      padding: '15px', 
-                      fontSize: '16px',
-                      background: selectedExchangeProduct ? '#10b981' : '#667eea',
-                      border: 'none'
-                    }}
-                  >
-                    {selectedExchangeProduct ? '✓ Product Selected - Click to Change' : '🔍 Browse & Select Exchange Product'}
-                  </button>
-                )}
-              </div>
+          {formData.actionType === 'Exchange' && formData.exchangeType === 'different' && !selectedExchangeProduct && (
+            <div style={{ 
+              background: '#f0f9ff', 
+              padding: '15px', 
+              borderRadius: '8px', 
+              marginBottom: '20px',
+              border: '2px dashed #0ea5e9',
+              textAlign: 'center'
+            }}>
+              <p style={{ margin: 0, color: '#0c4a6e', fontSize: '14px' }}>
+                🔍 <strong>Product selection modal will open automatically</strong>
+                <br />
+                <span style={{ fontSize: '13px' }}>Select a product from the list to continue</span>
+              </p>
+            </div>
+          )}
 
           {/* Exchange with Same Product Confirmation */}
           {formData.actionType === 'Exchange' && formData.exchangeType === 'same' && selectedExchangeProduct && (
