@@ -95,7 +95,7 @@ function ShopifyOrders() {
                       <td>{order.customerEmail}</td>
                       <td>{new Date(order.orderDate).toLocaleDateString()}</td>
                       <td>{order.itemCount} items</td>
-                      <td>${parseFloat(order.totalPrice).toFixed(2)}</td>
+                      <td>₹{parseFloat(order.totalPrice).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>

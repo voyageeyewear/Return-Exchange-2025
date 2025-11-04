@@ -429,7 +429,7 @@ function ReturnForm() {
             <h4>{selectedItem.product_name}</h4>
             <p><strong>SKU:</strong> {selectedItem.sku}</p>
             <p><strong>Quantity:</strong> {selectedItem.quantity}</p>
-            <p><strong>Price:</strong> ${parseFloat(selectedItem.price).toFixed(2)}</p>
+            <p><strong>Price:</strong> ₹{parseFloat(selectedItem.price).toFixed(2)}</p>
           </div>
         </div>
 

@@ -205,7 +205,7 @@ function RequestDetails() {
               </div>
               <div className="detail-row">
                 <strong>Price:</strong>
-                <span>${parseFloat(request.price).toFixed(2)}</span>
+                <span>₹{parseFloat(request.price).toFixed(2)}</span>
               </div>
               
               {request.product_image && (
