@@ -10,6 +10,8 @@ function AdminDashboard() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [dateRange, setDateRange] = useState('all');
+  const [showDateDropdown, setShowDateDropdown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,7 +80,30 @@ function AdminDashboard() {
     return 'refund-completed';
   };
 
-  const filteredRequests = requests;
+  // Filter requests by date range
+  const filterByDateRange = (requests) => {
+    if (dateRange === 'all') return requests;
+    
+    const now = new Date();
+    const daysMap = {
+      '7days': 7,
+      '30days': 30,
+      '90days': 90,
+      '6months': 180
+    };
+    
+    const days = daysMap[dateRange];
+    if (!days) return requests;
+    
+    const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+    
+    return requests.filter(request => {
+      const requestDate = new Date(request.submitted_date);
+      return requestDate >= cutoffDate;
+    });
+  };
+
+  const filteredRequests = filterByDateRange(requests);
 
   const getFilteredCount = (filterType) => {
     if (filterType === 'All') return stats.total || 0;
@@ -86,6 +111,17 @@ function AdminDashboard() {
     if (filterType === 'Closed') return stats.completed || 0;
     if (filterType === 'FAILED') return stats.rejected || 0;
     return 0;
+  };
+
+  const getDateRangeLabel = () => {
+    const labels = {
+      'all': 'All Time',
+      '7days': 'Last 7 days',
+      '30days': 'Last 30 days',
+      '90days': 'Last 90 days',
+      '6months': 'Last 6 months'
+    };
+    return labels[dateRange] || 'Date range';
   };
 
   return (
@@ -154,12 +190,72 @@ function AdminDashboard() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <button className="filter-btn">Date range</button>
-          <button className="filter-btn">Shipment status</button>
+          <div className="date-range-dropdown">
+            <button 
+              className="filter-btn"
+              onClick={() => setShowDateDropdown(!showDateDropdown)}
+            >
+              {getDateRangeLabel()} ▼
+            </button>
+            {showDateDropdown && (
+              <div className="date-dropdown-menu">
+                <button
+                  className={`dropdown-item ${dateRange === 'all' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDateRange('all');
+                    setShowDateDropdown(false);
+                  }}
+                >
+                  All Time
+                </button>
+                <button
+                  className={`dropdown-item ${dateRange === '7days' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDateRange('7days');
+                    setShowDateDropdown(false);
+                  }}
+                >
+                  Last 7 days
+                </button>
+                <button
+                  className={`dropdown-item ${dateRange === '30days' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDateRange('30days');
+                    setShowDateDropdown(false);
+                  }}
+                >
+                  Last 30 days
+                </button>
+                <button
+                  className={`dropdown-item ${dateRange === '90days' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDateRange('90days');
+                    setShowDateDropdown(false);
+                  }}
+                >
+                  Last 90 days
+                </button>
+                <button
+                  className={`dropdown-item ${dateRange === '6months' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDateRange('6months');
+                    setShowDateDropdown(false);
+                  }}
+                >
+                  Last 6 months
+                </button>
+              </div>
+            )}
+          </div>
+          <button className="filter-btn">Shipment status ▼</button>
           <button className="filter-btn">
             All filters <span className="filter-icon">⚙️</span>
           </button>
-          <button className="clear-btn">Clear all</button>
+          <button className="clear-btn" onClick={() => {
+            setDateRange('all');
+            setSearch('');
+            setFilter('All');
+          }}>Clear all</button>
           <button className="actions-btn">Actions ▼</button>
         </div>
 
