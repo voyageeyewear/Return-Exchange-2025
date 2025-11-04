@@ -898,7 +898,7 @@ function ReturnForm() {
           }}>
             {/* Modal Header */}
             <div style={{
-              padding: window.innerWidth <= 768 ? '15px 20px' : '20px 30px',
+              padding: window.innerWidth <= 768 ? '12px 16px' : '20px 30px',
               borderBottom: '2px solid #e0e0e0',
               display: 'flex',
               justifyContent: 'space-between',
@@ -907,7 +907,7 @@ function ReturnForm() {
             }}>
               <h2 style={{ 
                 margin: 0, 
-                fontSize: window.innerWidth <= 768 ? '18px' : '24px', 
+                fontSize: window.innerWidth <= 768 ? '16px' : '24px', 
                 fontWeight: '600',
                 lineHeight: '1.3'
               }}>
@@ -939,7 +939,7 @@ function ReturnForm() {
 
             {/* Search Bar */}
             <div style={{ 
-              padding: window.innerWidth <= 768 ? '15px 20px' : '20px 30px', 
+              padding: window.innerWidth <= 768 ? '12px 16px' : '20px 30px', 
               borderBottom: '1px solid #e0e0e0',
               flexShrink: 0
             }}>
@@ -951,7 +951,7 @@ function ReturnForm() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
                     flex: 1,
-                    padding: window.innerWidth <= 768 ? '10px 15px' : '12px 20px',
+                    padding: window.innerWidth <= 768 ? '10px 12px' : '12px 20px',
                     fontSize: window.innerWidth <= 768 ? '14px' : '16px',
                     border: '2px solid #ddd',
                     borderRadius: '8px',
@@ -962,12 +962,12 @@ function ReturnForm() {
                 />
                 <button
                   style={{
-                    padding: window.innerWidth <= 768 ? '10px 20px' : '12px 30px',
+                    padding: window.innerWidth <= 768 ? '10px 16px' : '12px 30px',
                     background: '#333',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
-                    fontSize: window.innerWidth <= 768 ? '14px' : '16px',
+                    fontSize: window.innerWidth <= 768 ? '13px' : '16px',
                     fontWeight: '600',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap'
@@ -984,7 +984,7 @@ function ReturnForm() {
               style={{
                 flex: 1,
                 overflowY: 'auto',
-                padding: window.innerWidth <= 768 ? '15px' : '30px',
+                padding: window.innerWidth <= 768 ? '12px' : '30px',
                 WebkitOverflowScrolling: 'touch'
               }}>
               {(() => {
@@ -1037,7 +1037,7 @@ function ReturnForm() {
                     <div style={{
                       display: 'grid',
                       gridTemplateColumns: window.innerWidth <= 768 ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))',
-                      gap: window.innerWidth <= 768 ? '15px' : '20px',
+                      gap: window.innerWidth <= 768 ? '12px' : '20px',
                       marginBottom: '20px'
                     }}>
                       {currentItems.map(({ product, variant }) => (
@@ -1046,7 +1046,7 @@ function ReturnForm() {
                         style={{
                           border: '2px solid #e0e0e0',
                           borderRadius: window.innerWidth <= 768 ? '10px' : '8px',
-                          padding: window.innerWidth <= 768 ? '15px' : '20px',
+                          padding: window.innerWidth <= 768 ? '12px' : '20px',
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
@@ -1065,13 +1065,14 @@ function ReturnForm() {
                         {/* Product Image */}
                         <div style={{
                           width: '100%',
-                          height: window.innerWidth <= 768 ? '250px' : '200px',
-                          marginBottom: window.innerWidth <= 768 ? '12px' : '15px',
+                          height: window.innerWidth <= 768 ? '180px' : '200px',
+                          marginBottom: window.innerWidth <= 768 ? '10px' : '15px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           background: '#f5f5f5',
-                          borderRadius: '6px'
+                          borderRadius: '6px',
+                          overflow: 'hidden'
                         }}>
                           {product.image ? (
                             <img
@@ -1093,12 +1094,16 @@ function ReturnForm() {
 
                         {/* Product Title */}
                         <h3 style={{
-                          margin: '0 0 8px 0',
-                          fontSize: window.innerWidth <= 768 ? '15px' : '16px',
+                          margin: '0 0 6px 0',
+                          fontSize: window.innerWidth <= 768 ? '14px' : '16px',
                           fontWeight: '600',
                           textAlign: 'center',
-                          lineHeight: '1.4',
-                          minHeight: window.innerWidth <= 768 ? 'auto' : '44px'
+                          lineHeight: '1.3',
+                          minHeight: window.innerWidth <= 768 ? 'auto' : '44px',
+                          display: '-webkit-box',
+                          WebkitLineClamp: window.innerWidth <= 768 ? '2' : '3',
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
                         }}>
                           {product.title} {variant.title !== 'Default Title' ? `| ${variant.title}` : ''}
                         </h3>
@@ -1106,8 +1111,8 @@ function ReturnForm() {
                         {/* SKU */}
                         {variant.sku && (
                           <p style={{
-                            margin: '0 0 8px 0',
-                            fontSize: window.innerWidth <= 768 ? '12px' : '13px',
+                            margin: '0 0 6px 0',
+                            fontSize: window.innerWidth <= 768 ? '11px' : '13px',
                             color: '#666',
                             fontFamily: 'monospace'
                           }}>
@@ -1117,12 +1122,12 @@ function ReturnForm() {
 
                         {/* Price */}
                         <p style={{
-                          margin: '0 0 12px 0',
-                          fontSize: window.innerWidth <= 768 ? '18px' : '20px',
+                          margin: '0 0 10px 0',
+                          fontSize: window.innerWidth <= 768 ? '16px' : '20px',
                           fontWeight: '700',
                           color: '#333'
                         }}>
-                          ₹ {parseFloat(variant.price).toFixed(2)}
+                          ₹{parseFloat(variant.price).toFixed(2)}
                         </p>
 
                         {/* Select Button */}
@@ -1131,15 +1136,16 @@ function ReturnForm() {
                           disabled={!variant.available}
                           style={{
                             width: '100%',
-                            padding: window.innerWidth <= 768 ? '14px' : '12px',
+                            padding: window.innerWidth <= 768 ? '12px 16px' : '12px',
                             background: variant.available ? 'white' : '#ccc',
                             color: variant.available ? '#333' : '#666',
                             border: variant.available ? '2px solid #333' : '2px solid #ccc',
                             borderRadius: '6px',
-                            fontSize: window.innerWidth <= 768 ? '15px' : '16px',
+                            fontSize: window.innerWidth <= 768 ? '14px' : '16px',
                             fontWeight: '600',
                             cursor: variant.available ? 'pointer' : 'not-allowed',
-                            transition: 'all 0.2s ease'
+                            transition: 'all 0.2s ease',
+                            flexShrink: 0
                           }}
                           onMouseEnter={(e) => {
                             if (variant.available) {
