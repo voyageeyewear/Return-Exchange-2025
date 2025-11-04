@@ -279,6 +279,7 @@ function ReturnForm() {
       submitData.append('productName', selectedItem.product_name);
       submitData.append('productSku', selectedItem.sku);
       submitData.append('productPrice', selectedItem.price);
+      console.log('📸 Sending product image:', selectedItem.product_image || 'EMPTY');
       submitData.append('productImage', selectedItem.product_image || '');
       submitData.append('customerName', order.customerName);
       submitData.append('customerEmail', order.customerEmail);

@@ -82,6 +82,8 @@ router.post('/submit', upload.single('image'), (req, res) => {
     creditOption
   } = req.body;
   
+  console.log('📸 Product Image received:', productImage || 'EMPTY');
+  
   if (!orderNumber || !shopifyItemId || !productName || !customerName || !customerEmail || !actionType || !reason) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
