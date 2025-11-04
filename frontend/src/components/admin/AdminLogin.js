@@ -36,12 +36,15 @@ function AdminLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('🎯 Form submitted!', formData);
     setError('');
     setLoading(true);
 
     try {
       console.log('🔐 Attempting login...', { email: formData.email });
-      const response = await axios.post('/api/auth/login', formData);
+      const response = await axios.post('/api/auth/login', formData, {
+        timeout: 10000 // 10 second timeout
+      });
       console.log('✅ Login response:', response.data);
       
       if (response.data.token) {
@@ -49,11 +52,25 @@ function AdminLogin() {
         localStorage.setItem('adminUser', JSON.stringify(response.data.user));
         console.log('✅ Token saved, redirecting to dashboard...');
         navigate('/admin/dashboard');
+      } else {
+        setError('Login successful but no token received');
       }
     } catch (err) {
       console.error('❌ Login error:', err);
       console.error('❌ Error response:', err.response?.data);
-      setError(err.response?.data?.error || err.message || 'Login failed. Please try again.');
+      console.error('❌ Error status:', err.response?.status);
+      
+      let errorMessage = 'Login failed. Please try again.';
+      
+      if (err.code === 'ECONNABORTED') {
+        errorMessage = 'Request timeout. Please check your connection.';
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
