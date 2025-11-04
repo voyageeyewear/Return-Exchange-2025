@@ -131,7 +131,7 @@ async function getShopifyOrderById(orderId) {
 }
 
 // Get products from Shopify
-async function getShopifyProducts(limit = 250) {
+async function getShopifyProducts(limit = null) {
   if (!shopifyAPI) {
     throw new Error('Shopify API not configured');
   }
@@ -140,9 +140,13 @@ async function getShopifyProducts(limit = 250) {
     let allProducts = [];
     let hasNextPage = true;
     let pageInfo = null;
+    let pageCount = 0;
+    const maxPages = limit ? Math.ceil(limit / 250) : 999; // Safety limit: max 999 pages
+
+    console.log(`🔍 Starting to fetch products (limit: ${limit || 'ALL'})...`);
 
     // Shopify max limit is 250 per request, so we need to paginate
-    while (hasNextPage) {
+    while (hasNextPage && pageCount < maxPages) {
       const params = {
         limit: 250
       };
@@ -156,6 +160,9 @@ async function getShopifyProducts(limit = 250) {
       const products = response.data.products || [];
       
       allProducts = allProducts.concat(products);
+      pageCount++;
+
+      console.log(`📦 Fetched page ${pageCount}: ${products.length} products (Total: ${allProducts.length})`);
 
       // Check if there's a next page using Link header
       const linkHeader = response.headers.link;
@@ -165,22 +172,28 @@ async function getShopifyProducts(limit = 250) {
         pageInfo = nextMatch ? nextMatch[1] : null;
         hasNextPage = !!pageInfo;
       } else {
+        console.log('✅ No more pages available');
         hasNextPage = false;
       }
 
       // Safety check - if we have the requested limit, stop
       if (limit && allProducts.length >= limit) {
         allProducts = allProducts.slice(0, limit);
+        console.log(`✅ Reached requested limit of ${limit} products`);
         break;
       }
 
-      console.log(`Fetched ${allProducts.length} products so far...`);
+      // If we got less than 250 products, we've reached the end
+      if (products.length < 250) {
+        console.log('✅ Received less than 250 products, end reached');
+        hasNextPage = false;
+      }
     }
 
-    console.log(`✅ Total products fetched: ${allProducts.length}`);
+    console.log(`✅ Total products fetched: ${allProducts.length} (from ${pageCount} pages)`);
     return allProducts;
   } catch (error) {
-    console.error('Error fetching Shopify products:', error.message);
+    console.error('❌ Error fetching Shopify products:', error.message);
     throw error;
   }
 }
