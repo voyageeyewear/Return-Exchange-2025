@@ -9,6 +9,7 @@
     "client": "cd frontend && npm start",
     "dev:all": "concurrently \"npm run dev\" \"npm run client\"",
     "build": "cd frontend && npm install && npm run build",
+    "deploy": "NODE_ENV=production node backend/server.js",
     "postinstall": "node scripts/postinstall.js"
   },
   "keywords": [
