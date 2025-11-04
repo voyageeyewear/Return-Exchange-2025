@@ -242,6 +242,26 @@
   background: #dbeafe;
 }
 
+/* Shipment Status Dropdown */
+.shipment-status-dropdown {
+  position: relative;
+}
+
+.shipment-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 50;
+  min-width: 240px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
 .clear-btn {
   padding: 8px 16px;
   background: transparent;

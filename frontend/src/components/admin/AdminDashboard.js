@@ -12,6 +12,8 @@ function AdminDashboard() {
   const [user, setUser] = useState(null);
   const [dateRange, setDateRange] = useState('all');
   const [showDateDropdown, setShowDateDropdown] = useState(false);
+  const [shipmentStatus, setShipmentStatus] = useState('all');
+  const [showShipmentDropdown, setShowShipmentDropdown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,17 +33,20 @@ function AdminDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, filter, search]);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showDateDropdown && !event.target.closest('.date-range-dropdown')) {
         setShowDateDropdown(false);
       }
+      if (showShipmentDropdown && !event.target.closest('.shipment-status-dropdown')) {
+        setShowShipmentDropdown(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showDateDropdown]);
+  }, [showDateDropdown, showShipmentDropdown]);
 
   const fetchData = async (token) => {
     setLoading(true);
@@ -122,7 +127,21 @@ function AdminDashboard() {
     return filtered;
   };
 
-  const filteredRequests = filterByDateRange(requests);
+  // Filter by shipment status
+  const filterByShipmentStatus = (requests) => {
+    if (shipmentStatus === 'all') {
+      return requests;
+    }
+    
+    return requests.filter(request => {
+      const status = request.status || 'Pending';
+      return status.toLowerCase().replace(/\s+/g, '') === shipmentStatus.toLowerCase().replace(/\s+/g, '');
+    });
+  };
+
+  // Apply both filters
+  const dateFilteredRequests = filterByDateRange(requests);
+  const filteredRequests = filterByShipmentStatus(dateFilteredRequests);
 
   const getFilteredCount = (filterType) => {
     if (filterType === 'All') return stats.total || 0;
@@ -141,6 +160,11 @@ function AdminDashboard() {
       '6months': 'Last 6 months'
     };
     return labels[dateRange] || 'Date range';
+  };
+
+  const getShipmentStatusLabel = () => {
+    if (shipmentStatus === 'all') return 'Shipment status';
+    return shipmentStatus;
   };
 
   return (
@@ -266,12 +290,141 @@ function AdminDashboard() {
               </div>
             )}
           </div>
-          <button className="filter-btn">Shipment status ▼</button>
+          <div className="shipment-status-dropdown">
+            <button 
+              className="filter-btn"
+              onClick={() => setShowShipmentDropdown(!showShipmentDropdown)}
+            >
+              {getShipmentStatusLabel()} ▼
+            </button>
+            {showShipmentDropdown && (
+              <div className="shipment-dropdown-menu">
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'all' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('all');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  All Statuses
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'Canceled' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('Canceled');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Canceled
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'CancellationRequested' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('CancellationRequested');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Cancellation Requested
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'CreatingPickup' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('CreatingPickup');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Creating Pickup
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'Delivered' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('Delivered');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Delivered
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'Failed' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('Failed');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Failed
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'InTransit' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('InTransit');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  In Transit
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'OutForDelivery' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('OutForDelivery');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Out For Delivery
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'OutForPickup' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('OutForPickup');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Out For Pickup
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'PickupCreated' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('PickupCreated');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Pickup Created
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'PickupException' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('PickupException');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Pickup Exception
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'PickupGenerated' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('PickupGenerated');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Pickup Generated
+                </button>
+                <button
+                  className={`dropdown-item ${shipmentStatus === 'ReachedAtDestinationHub' ? 'active' : ''}`}
+                  onClick={() => {
+                    setShipmentStatus('ReachedAtDestinationHub');
+                    setShowShipmentDropdown(false);
+                  }}
+                >
+                  Reached At Destination Hub
+                </button>
+              </div>
+            )}
+          </div>
           <button className="filter-btn">
             All filters <span className="filter-icon">⚙️</span>
           </button>
           <button className="clear-btn" onClick={() => {
             setDateRange('all');
+            setShipmentStatus('all');
             setSearch('');
             setFilter('All');
           }}>Clear all</button>
