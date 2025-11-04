@@ -16,8 +16,11 @@ function AdminDashboard() {
     const token = localStorage.getItem('adminToken');
     const userData = localStorage.getItem('adminUser');
 
+    console.log('🔐 AdminDashboard: Checking auth...', { hasToken: !!token });
+
     if (!token) {
-      navigate('/admin');
+      console.log('❌ No token found, redirecting to login...');
+      navigate('/admin', { replace: true });
       return;
     }
 
@@ -46,10 +49,12 @@ function AdminDashboard() {
       setRequests(requestsResponse.data.requests);
       setStats(statsResponse.data);
     } catch (err) {
+      console.error('❌ Dashboard fetch error:', err);
       if (err.response?.status === 401 || err.response?.status === 403) {
+        console.log('❌ Unauthorized, clearing auth and redirecting...');
         localStorage.removeItem('adminToken');
         localStorage.removeItem('adminUser');
-        navigate('/admin');
+        navigate('/admin', { replace: true });
       }
     } finally {
       setLoading(false);
