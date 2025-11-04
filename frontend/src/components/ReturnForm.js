@@ -832,68 +832,6 @@ function ReturnForm() {
             </div>
           )}
 
-          {/* Payment Section - Only for different items */}
-          {formData.actionType === 'Exchange' && formData.exchangeType === 'different' && showPayment && priceDifference > 0 && (
-            <div style={{ 
-                  background: '#fef3c7', 
-                  padding: '20px', 
-                  borderRadius: '8px', 
-                  marginBottom: '20px',
-                  border: '2px solid #f59e0b'
-                }}>
-                  <h4 style={{ marginBottom: '15px', color: '#92400e' }}>💳 Payment Required</h4>
-                  <p style={{ marginBottom: '15px', color: '#92400e' }}>
-                    Please complete the payment of <strong>₹{priceDifference.toFixed(2)}</strong> using one of the methods below:
-                  </p>
-
-                  <div className="form-group">
-                    <label>Payment Method *</label>
-                    <select
-                      className="form-control"
-                      value={paymentData.method}
-                      onChange={(e) => setPaymentData({ ...paymentData, method: e.target.value })}
-                      required
-                    >
-                      <option value="UPI">UPI</option>
-                      <option value="Card">Debit/Credit Card</option>
-                      <option value="Net Banking">Net Banking</option>
-                    </select>
-                  </div>
-
-                  {paymentData.method === 'UPI' && (
-                    <div className="form-group">
-                      <label>UPI ID *</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="yourname@upi"
-                        value={paymentData.upiId}
-                        onChange={(e) => setPaymentData({ ...paymentData, upiId: e.target.value })}
-                        required
-                      />
-                      <small style={{ color: '#92400e', display: 'block', marginTop: '5px' }}>
-                        Payment QR/Link will be sent to complete payment
-                      </small>
-                    </div>
-                  )}
-
-                  <div className="form-group">
-                    <label>Transaction ID / Reference Number *</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter transaction ID after payment"
-                      value={paymentData.transactionId}
-                      onChange={(e) => setPaymentData({ ...paymentData, transactionId: e.target.value })}
-                      required
-                    />
-                    <small style={{ color: '#92400e', display: 'block', marginTop: '5px' }}>
-                      Complete payment first, then enter the transaction ID here
-                    </small>
-                  </div>
-            </div>
-          )}
-
           {/* Exchange Details - Show for all exchange requests */}
           {formData.actionType === 'Exchange' && (
             <div className="form-group">
