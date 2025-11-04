@@ -31,6 +31,18 @@ function AdminDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, filter, search]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showDateDropdown && !event.target.closest('.date-range-dropdown')) {
+        setShowDateDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showDateDropdown]);
+
   const fetchData = async (token) => {
     setLoading(true);
     try {
@@ -82,7 +94,10 @@ function AdminDashboard() {
 
   // Filter requests by date range
   const filterByDateRange = (requests) => {
-    if (dateRange === 'all') return requests;
+    if (dateRange === 'all') {
+      console.log('📅 Date filter: All Time, showing all', requests.length, 'requests');
+      return requests;
+    }
     
     const now = new Date();
     const daysMap = {
@@ -96,11 +111,15 @@ function AdminDashboard() {
     if (!days) return requests;
     
     const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+    console.log('📅 Filtering for last', days, 'days. Cutoff date:', cutoffDate.toLocaleDateString());
     
-    return requests.filter(request => {
+    const filtered = requests.filter(request => {
       const requestDate = new Date(request.submitted_date);
       return requestDate >= cutoffDate;
     });
+    
+    console.log('📊 Filtered results:', filtered.length, 'of', requests.length, 'requests');
+    return filtered;
   };
 
   const filteredRequests = filterByDateRange(requests);
@@ -258,6 +277,21 @@ function AdminDashboard() {
           }}>Clear all</button>
           <button className="actions-btn">Actions ▼</button>
         </div>
+
+        {/* Results count */}
+        {!loading && (
+          <div style={{ 
+            padding: '12px 16px', 
+            background: '#f9fafb', 
+            borderRadius: '8px',
+            marginBottom: '16px',
+            fontSize: '14px',
+            color: '#6b7280'
+          }}>
+            Showing <strong>{filteredRequests.length}</strong> of <strong>{requests.length}</strong> requests
+            {dateRange !== 'all' && <span> (filtered by {getDateRangeLabel()})</span>}
+          </div>
+        )}
 
         {/* Table */}
         {loading ? (
