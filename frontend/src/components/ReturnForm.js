@@ -47,6 +47,8 @@ function ReturnForm() {
       
       // Find the selected item
       const item = orderData.items.find(i => i.id === parseInt(itemId));
+      console.log('🔍 Selected item:', item);
+      console.log('📸 Product image in selected item:', item?.product_image || 'MISSING');
       setSelectedItem(item);
 
       // Show policy modal if return window has expired
