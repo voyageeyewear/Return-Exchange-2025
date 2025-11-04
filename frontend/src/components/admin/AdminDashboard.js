@@ -135,7 +135,11 @@ function AdminDashboard() {
     
     return requests.filter(request => {
       const status = request.status || 'Pending';
-      return status.toLowerCase().replace(/\s+/g, '') === shipmentStatus.toLowerCase().replace(/\s+/g, '');
+      // Normalize both values for comparison (remove spaces, lowercase)
+      const normalizedStatus = status.toLowerCase().replace(/\s+/g, '');
+      const normalizedFilter = shipmentStatus.toLowerCase().replace(/\s+/g, '');
+      console.log('🔍 Comparing:', normalizedStatus, '===', normalizedFilter);
+      return normalizedStatus === normalizedFilter;
     });
   };
 
@@ -309,112 +313,49 @@ function AdminDashboard() {
                   All Statuses
                 </button>
                 <button
-                  className={`dropdown-item ${shipmentStatus === 'Canceled' ? 'active' : ''}`}
+                  className={`dropdown-item ${shipmentStatus === 'Pending' ? 'active' : ''}`}
                   onClick={() => {
-                    setShipmentStatus('Canceled');
+                    setShipmentStatus('Pending');
                     setShowShipmentDropdown(false);
                   }}
                 >
-                  Canceled
+                  Pending
                 </button>
                 <button
-                  className={`dropdown-item ${shipmentStatus === 'CancellationRequested' ? 'active' : ''}`}
+                  className={`dropdown-item ${shipmentStatus === 'In Progress' ? 'active' : ''}`}
                   onClick={() => {
-                    setShipmentStatus('CancellationRequested');
+                    setShipmentStatus('In Progress');
                     setShowShipmentDropdown(false);
                   }}
                 >
-                  Cancellation Requested
+                  In Progress
                 </button>
                 <button
-                  className={`dropdown-item ${shipmentStatus === 'CreatingPickup' ? 'active' : ''}`}
+                  className={`dropdown-item ${shipmentStatus === 'Approved' ? 'active' : ''}`}
                   onClick={() => {
-                    setShipmentStatus('CreatingPickup');
+                    setShipmentStatus('Approved');
                     setShowShipmentDropdown(false);
                   }}
                 >
-                  Creating Pickup
+                  Approved
                 </button>
                 <button
-                  className={`dropdown-item ${shipmentStatus === 'Delivered' ? 'active' : ''}`}
+                  className={`dropdown-item ${shipmentStatus === 'Rejected' ? 'active' : ''}`}
                   onClick={() => {
-                    setShipmentStatus('Delivered');
+                    setShipmentStatus('Rejected');
                     setShowShipmentDropdown(false);
                   }}
                 >
-                  Delivered
+                  Rejected
                 </button>
                 <button
-                  className={`dropdown-item ${shipmentStatus === 'Failed' ? 'active' : ''}`}
+                  className={`dropdown-item ${shipmentStatus === 'Completed' ? 'active' : ''}`}
                   onClick={() => {
-                    setShipmentStatus('Failed');
+                    setShipmentStatus('Completed');
                     setShowShipmentDropdown(false);
                   }}
                 >
-                  Failed
-                </button>
-                <button
-                  className={`dropdown-item ${shipmentStatus === 'InTransit' ? 'active' : ''}`}
-                  onClick={() => {
-                    setShipmentStatus('InTransit');
-                    setShowShipmentDropdown(false);
-                  }}
-                >
-                  In Transit
-                </button>
-                <button
-                  className={`dropdown-item ${shipmentStatus === 'OutForDelivery' ? 'active' : ''}`}
-                  onClick={() => {
-                    setShipmentStatus('OutForDelivery');
-                    setShowShipmentDropdown(false);
-                  }}
-                >
-                  Out For Delivery
-                </button>
-                <button
-                  className={`dropdown-item ${shipmentStatus === 'OutForPickup' ? 'active' : ''}`}
-                  onClick={() => {
-                    setShipmentStatus('OutForPickup');
-                    setShowShipmentDropdown(false);
-                  }}
-                >
-                  Out For Pickup
-                </button>
-                <button
-                  className={`dropdown-item ${shipmentStatus === 'PickupCreated' ? 'active' : ''}`}
-                  onClick={() => {
-                    setShipmentStatus('PickupCreated');
-                    setShowShipmentDropdown(false);
-                  }}
-                >
-                  Pickup Created
-                </button>
-                <button
-                  className={`dropdown-item ${shipmentStatus === 'PickupException' ? 'active' : ''}`}
-                  onClick={() => {
-                    setShipmentStatus('PickupException');
-                    setShowShipmentDropdown(false);
-                  }}
-                >
-                  Pickup Exception
-                </button>
-                <button
-                  className={`dropdown-item ${shipmentStatus === 'PickupGenerated' ? 'active' : ''}`}
-                  onClick={() => {
-                    setShipmentStatus('PickupGenerated');
-                    setShowShipmentDropdown(false);
-                  }}
-                >
-                  Pickup Generated
-                </button>
-                <button
-                  className={`dropdown-item ${shipmentStatus === 'ReachedAtDestinationHub' ? 'active' : ''}`}
-                  onClick={() => {
-                    setShipmentStatus('ReachedAtDestinationHub');
-                    setShowShipmentDropdown(false);
-                  }}
-                >
-                  Reached At Destination Hub
+                  Completed
                 </button>
               </div>
             )}
