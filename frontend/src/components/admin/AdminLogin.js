@@ -40,15 +40,20 @@ function AdminLogin() {
     setLoading(true);
 
     try {
+      console.log('🔐 Attempting login...', { email: formData.email });
       const response = await axios.post('/api/auth/login', formData);
+      console.log('✅ Login response:', response.data);
       
       if (response.data.token) {
         localStorage.setItem('adminToken', response.data.token);
         localStorage.setItem('adminUser', JSON.stringify(response.data.user));
+        console.log('✅ Token saved, redirecting to dashboard...');
         navigate('/admin/dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      console.error('❌ Login error:', err);
+      console.error('❌ Error response:', err.response?.data);
+      setError(err.response?.data?.error || err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
