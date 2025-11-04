@@ -34,7 +34,7 @@ function ReturnForm() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 100; // Show 100 products per page
   const [creditOption, setCreditOption] = useState('next_order'); // 'next_order' or 'apply_now'
   const [showPolicyModal, setShowPolicyModal] = useState(false);
 
