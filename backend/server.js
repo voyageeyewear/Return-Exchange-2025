@@ -63,6 +63,21 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Return & Exchange System API is running' });
 });
 
+// Environment check endpoint (for debugging)
+app.get('/api/env-check', (req, res) => {
+  res.json({
+    nodeEnv: process.env.NODE_ENV,
+    hasShopifyUrl: !!process.env.SHOPIFY_STORE_URL,
+    hasShopifyToken: !!process.env.SHOPIFY_ACCESS_TOKEN,
+    hasJwtSecret: !!process.env.JWT_SECRET,
+    shopifyApiVersion: process.env.SHOPIFY_API_VERSION || 'not set',
+    // Show first/last 4 chars only for security
+    shopifyUrlPreview: process.env.SHOPIFY_STORE_URL ? 
+      `${process.env.SHOPIFY_STORE_URL.substring(0, 4)}...${process.env.SHOPIFY_STORE_URL.slice(-4)}` : 
+      'not set'
+  });
+});
+
 // Serve frontend static files in production
 if (process.env.NODE_ENV === 'production') {
   const frontendBuild = path.join(__dirname, '../frontend/build');
