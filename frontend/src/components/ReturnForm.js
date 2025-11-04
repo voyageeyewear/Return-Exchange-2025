@@ -120,12 +120,14 @@ function ReturnForm() {
   const fetchExchangeProducts = async () => {
     setLoadingProducts(true);
     try {
+      console.log('🔍 Fetching exchange products...');
       const response = await axios.get('/api/returns/exchange-products');
+      console.log('✅ Products fetched:', response.data.products?.length || 0);
       const productsData = response.data.products || [];
       setProducts(productsData);
       setFilteredProducts(productsData);
     } catch (err) {
-      console.error('Error fetching products:', err);
+      console.error('❌ Error fetching products:', err);
       setError('Failed to load exchange products');
     } finally {
       setLoadingProducts(false);
@@ -208,10 +210,16 @@ function ReturnForm() {
         setShowPayment(false);
       }
       
-      // If selecting "different", open product modal immediately
+      // If selecting "different", open modal immediately and fetch products in background
       if (value === 'different') {
+        console.log('🔄 User selected "Exchange with different items", opening modal...');
         setShowProductModal(true);
         setCurrentPage(1);
+        
+        // Fetch products if not already loaded
+        if (products.length === 0) {
+          fetchExchangeProducts();
+        }
       }
     } else {
     setFormData({
@@ -1067,6 +1075,23 @@ function ReturnForm() {
                 const endIndex = startIndex + itemsPerPage;
                 const currentItems = allProductVariants.slice(startIndex, endIndex);
 
+                // Show loading state while fetching products
+                if (loadingProducts) {
+                  return (
+                    <div style={{ 
+                      textAlign: 'center', 
+                      padding: window.innerWidth <= 768 ? '30px 20px' : '40px', 
+                      color: '#666' 
+                    }}>
+                      <div style={{ fontSize: window.innerWidth <= 768 ? '36px' : '48px', marginBottom: '15px' }}>⏳</div>
+                      <p style={{ fontSize: window.innerWidth <= 768 ? '16px' : '18px' }}>Loading products...</p>
+                      <p style={{ fontSize: window.innerWidth <= 768 ? '12px' : '14px', color: '#999', marginTop: '10px' }}>
+                        Please wait while we fetch all available products
+                      </p>
+                    </div>
+                  );
+                }
+
                 if (filteredProducts.length === 0) {
                   return (
                     <div style={{ 
@@ -1076,6 +1101,9 @@ function ReturnForm() {
                     }}>
                       <div style={{ fontSize: window.innerWidth <= 768 ? '36px' : '48px', marginBottom: '15px' }}>🔍</div>
                       <p style={{ fontSize: window.innerWidth <= 768 ? '16px' : '18px' }}>No products found</p>
+                      <p style={{ fontSize: window.innerWidth <= 768 ? '12px' : '14px', color: '#999', marginTop: '10px' }}>
+                        Try adjusting your search or wait for products to load
+                      </p>
                     </div>
                   );
                 }
