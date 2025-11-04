@@ -10,6 +10,7 @@ function ReturnForm() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [formData, setFormData] = useState({
     actionType: 'Return',
+    exchangeType: '', // 'same' or 'different'
     reason: '',
     otherReason: '',
     exchangeDetails: '',
@@ -176,12 +177,36 @@ function ReturnForm() {
       setFormData({
         ...formData,
         [name]: value,
+        exchangeType: '', // Reset exchange type
         reason: '' // Reset reason when action type changes
       });
       setSelectedExchangeProduct(null);
       setPriceDifference(0);
       setShowPayment(false);
       setCreditOption('next_order'); // Reset credit option
+    } else if (name === 'exchangeType') {
+      // When exchange type changes, reset reason and product selection
+      setFormData({
+        ...formData,
+        [name]: value,
+        reason: ''
+      });
+      setSelectedExchangeProduct(null);
+      setPriceDifference(0);
+      setShowPayment(false);
+      
+      // If selecting "same", auto-select the current item
+      if (value === 'same' && selectedItem) {
+        const sameProduct = {
+          id: selectedItem.product_id,
+          title: selectedItem.name,
+          sku: selectedItem.sku,
+          price: selectedItem.price
+        };
+        setSelectedExchangeProduct(sameProduct);
+        setPriceDifference(0);
+        setShowPayment(false);
+      }
     } else {
       setFormData({
         ...formData,
@@ -327,8 +352,6 @@ function ReturnForm() {
     "Size doesn't fit",
     'Changed my mind',
     'Quality not as expected',
-    'Exchange with different items',
-    'Exchange',
     'Other'
   ];
 
@@ -441,6 +464,35 @@ function ReturnForm() {
               </label>
             </div>
           </div>
+
+          {/* Exchange Type - Only show when Exchange is selected */}
+          {formData.actionType === 'Exchange' && (
+            <div className="form-group">
+              <label>Exchange Type *</label>
+              <div className="radio-group">
+                <label className="radio-option">
+                  <input
+                    type="radio"
+                    name="exchangeType"
+                    value="different"
+                    checked={formData.exchangeType === 'different'}
+                    onChange={handleChange}
+                  />
+                  <span>Exchange with different items</span>
+                </label>
+                <label className="radio-option">
+                  <input
+                    type="radio"
+                    name="exchangeType"
+                    value="same"
+                    checked={formData.exchangeType === 'same'}
+                    onChange={handleChange}
+                  />
+                  <span>Exchange (same product)</span>
+                </label>
+              </div>
+            </div>
+          )}
 
           {/* Reason */}
           <div className="form-group">
