@@ -322,8 +322,14 @@ function ReturnForm() {
   ];
 
   const exchangeReasons = [
+    'Received wrong item',
+    'Item is damaged',
+    "Size doesn't fit",
+    'Changed my mind',
+    'Quality not as expected',
     'Exchange with different items',
-    'Exchange'
+    'Exchange',
+    'Other'
   ];
 
   return (
