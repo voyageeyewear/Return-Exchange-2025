@@ -45,7 +45,8 @@ const upload = multer({
 // Get available products for exchange
 router.get('/exchange-products', async (req, res) => {
   try {
-    const products = await getShopifyProducts(250); // Get up to 250 products
+    console.log('📦 Fetching ALL products for exchange...');
+    const products = await getShopifyProducts(null); // Get ALL products (no limit)
     
     // Format products for frontend
     const formattedProducts = products.map(product => ({

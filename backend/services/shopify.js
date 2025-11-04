@@ -131,14 +131,54 @@ async function getShopifyOrderById(orderId) {
 }
 
 // Get products from Shopify
-async function getShopifyProducts(limit = 50) {
+async function getShopifyProducts(limit = 250) {
+  if (!shopifyAPI) {
+    throw new Error('Shopify API not configured');
+  }
+
   try {
-    const response = await shopifyAPI.get('/products.json', {
-      params: {
-        limit: limit
+    let allProducts = [];
+    let hasNextPage = true;
+    let pageInfo = null;
+
+    // Shopify max limit is 250 per request, so we need to paginate
+    while (hasNextPage) {
+      const params = {
+        limit: 250
+      };
+
+      // Add page_info for pagination if available
+      if (pageInfo) {
+        params.page_info = pageInfo;
       }
-    });
-    return response.data.products;
+
+      const response = await shopifyAPI.get('/products.json', { params });
+      const products = response.data.products || [];
+      
+      allProducts = allProducts.concat(products);
+
+      // Check if there's a next page using Link header
+      const linkHeader = response.headers.link;
+      if (linkHeader && linkHeader.includes('rel="next"')) {
+        // Extract page_info from Link header
+        const nextMatch = linkHeader.match(/<[^>]*page_info=([^&>]+)[^>]*>;\s*rel="next"/);
+        pageInfo = nextMatch ? nextMatch[1] : null;
+        hasNextPage = !!pageInfo;
+      } else {
+        hasNextPage = false;
+      }
+
+      // Safety check - if we have the requested limit, stop
+      if (limit && allProducts.length >= limit) {
+        allProducts = allProducts.slice(0, limit);
+        break;
+      }
+
+      console.log(`Fetched ${allProducts.length} products so far...`);
+    }
+
+    console.log(`✅ Total products fetched: ${allProducts.length}`);
+    return allProducts;
   } catch (error) {
     console.error('Error fetching Shopify products:', error.message);
     throw error;
