@@ -24,14 +24,19 @@ function DebugOrders() {
 
     setLoading(true);
     try {
+      console.log('🔄 Fetching debug orders...');
       const response = await axios.get('/api/debug/orders/list', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      setOrders(response.data.orders);
+      console.log('✅ Debug orders response:', response.data);
+      setOrders(response.data.orders || []);
       setError('');
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to fetch orders');
+      console.error('❌ Debug orders error:', err);
+      const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to fetch orders';
+      const errorDetails = err.response?.data?.details ? `\n${err.response.data.details}` : '';
+      setError(errorMsg + errorDetails);
     } finally {
       setLoading(false);
     }
@@ -90,8 +95,13 @@ function DebugOrders() {
           </div>
 
           {error && (
-            <div className="alert alert-error">
-              {error}
+            <div className="alert alert-error" style={{ whiteSpace: 'pre-wrap' }}>
+              <strong>Error:</strong> {error}
+              <div style={{ marginTop: '10px' }}>
+                <button className="btn btn-primary" onClick={fetchOrders} style={{ fontSize: '0.9em' }}>
+                  🔄 Try Again
+                </button>
+              </div>
             </div>
           )}
 

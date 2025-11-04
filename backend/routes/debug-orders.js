@@ -7,7 +7,9 @@ const router = express.Router();
 // Debug endpoint to list all orders (admin only)
 router.get('/list', authenticateToken, async (req, res) => {
   try {
+    console.log('📥 Debug orders request received');
     const orders = await getShopifyOrders(100);
+    console.log(`✅ Fetched ${orders.length} orders from Shopify`);
     
     const formattedOrders = orders.map(order => ({
       orderNumber: order.name,
@@ -22,15 +24,18 @@ router.get('/list', authenticateToken, async (req, res) => {
       itemCount: order.line_items?.length || 0
     }));
 
+    console.log(`📤 Sending ${formattedOrders.length} formatted orders`);
     res.json({
       success: true,
       count: formattedOrders.length,
       orders: formattedOrders
     });
   } catch (error) {
+    console.error('❌ Debug orders error:', error);
     res.status(500).json({ 
       error: 'Failed to fetch orders',
-      message: error.message 
+      message: error.message,
+      details: error.toString()
     });
   }
 });
