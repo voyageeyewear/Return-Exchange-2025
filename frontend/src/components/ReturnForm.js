@@ -268,18 +268,6 @@ function ReturnForm() {
       }
     }
 
-    // Validate payment for price difference
-    if (showPayment && priceDifference > 0) {
-      if (paymentData.method === 'UPI' && !paymentData.upiId) {
-        setError('Please enter your UPI ID');
-        return;
-      }
-      if (!paymentData.transactionId) {
-        setError('Please enter transaction ID after completing payment');
-        return;
-      }
-    }
-
     setLoading(true);
 
     try {
@@ -312,14 +300,8 @@ function ReturnForm() {
           submitData.append('creditOption', creditOption);
         }
 
-        // Payment data
-        if (priceDifference > 0 && paymentData.transactionId) {
-          submitData.append('paymentStatus', 'Paid');
-          submitData.append('paymentMethod', paymentData.method);
-          submitData.append('paymentTransactionId', paymentData.transactionId);
-        } else {
-          submitData.append('paymentStatus', 'Not Required');
-        }
+        // Payment status - always set to 'Not Required' since payment collection is removed
+        submitData.append('paymentStatus', 'Not Required');
       }
       
       if (formData.image) {
