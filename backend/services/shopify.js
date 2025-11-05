@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const SHOPIFY_STORE_URL = process.env.SHOPIFY_STORE_URL;
 const SHOPIFY_ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
-const SHOPIFY_API_VERSION = process.env.SHOPIFY_API_VERSION || '2024-10';
+const SHOPIFY_API_VERSION = process.env.SHOPIFY_API_VERSION || '2024-07'; // Changed to stable version
 
 // Validate Shopify configuration
 if (!SHOPIFY_STORE_URL) {
@@ -34,7 +34,11 @@ async function getShopifyOrders(limit = 50) {
   }
   
   try {
-    const response = await shopifyAPI.get('/orders.json', {
+    const url = `/orders.json`;
+    const fullUrl = `${shopifyAPI.defaults.baseURL}${url}`;
+    console.log(`🔗 Calling Shopify API: ${fullUrl}`);
+    
+    const response = await shopifyAPI.get(url, {
       params: {
         limit: limit,
         status: 'any',
@@ -44,6 +48,9 @@ async function getShopifyOrders(limit = 50) {
     return response.data.orders;
   } catch (error) {
     console.error('❌ Error fetching Shopify orders:', error.message);
+    console.error('❌ Shopify API URL:', shopifyAPI.defaults.baseURL);
+    console.error('❌ Response status:', error.response?.status);
+    console.error('❌ Response data:', JSON.stringify(error.response?.data));
     throw error;
   }
 }
