@@ -4,12 +4,24 @@ const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Health check for debug route
+// Health check for debug route (no auth required)
 router.get('/health', (req, res) => {
   console.log('🏥 Debug orders health check');
   res.json({ 
     status: 'ok', 
     message: 'Debug orders endpoint is accessible',
+    timestamp: new Date().toISOString(),
+    route: '/api/debug/orders/health'
+  });
+});
+
+// Test endpoint with auth but no Shopify call
+router.get('/test-auth', authenticateToken, (req, res) => {
+  console.log('🧪 Debug orders auth test');
+  res.json({
+    status: 'ok',
+    message: 'Authentication successful',
+    user: req.user.email,
     timestamp: new Date().toISOString()
   });
 });
@@ -19,9 +31,31 @@ router.get('/list', authenticateToken, async (req, res) => {
   try {
     console.log('📥 Debug orders request received');
     console.log('🔐 User authenticated:', req.user ? 'YES' : 'NO');
+    console.log('👤 User email:', req.user?.email);
     
-    const orders = await getShopifyOrders(100);
-    console.log(`✅ Fetched ${orders.length} orders from Shopify`);
+    // Check Shopify credentials
+    if (!process.env.SHOPIFY_STORE_URL || !process.env.SHOPIFY_ACCESS_TOKEN) {
+      console.error('❌ Missing Shopify credentials');
+      return res.status(500).json({
+        error: 'Server configuration error',
+        message: 'Shopify credentials not configured',
+        details: 'SHOPIFY_STORE_URL or SHOPIFY_ACCESS_TOKEN is missing'
+      });
+    }
+    
+    console.log('🛍️ Fetching orders from Shopify...');
+    let orders;
+    try {
+      orders = await getShopifyOrders(100);
+      console.log(`✅ Fetched ${orders.length} orders from Shopify`);
+    } catch (shopifyError) {
+      console.error('❌ Shopify API error:', shopifyError.message);
+      return res.status(500).json({
+        error: 'Shopify API error',
+        message: shopifyError.message,
+        details: 'Failed to fetch orders from Shopify. Check server logs for details.'
+      });
+    }
     
     const formattedOrders = orders.map(order => ({
       orderNumber: order.name,

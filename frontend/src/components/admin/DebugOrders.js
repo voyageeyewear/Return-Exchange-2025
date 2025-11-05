@@ -33,8 +33,19 @@ function DebugOrders() {
       try {
         const healthCheck = await axios.get('/api/debug/orders/health');
         console.log('✅ Health check passed:', healthCheck.data);
+        
+        // Test authentication
+        const authTest = await axios.get('/api/debug/orders/test-auth', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log('✅ Auth test passed:', authTest.data);
       } catch (healthErr) {
-        console.error('❌ Health check failed:', healthErr);
+        console.error('❌ Health/Auth check failed:', healthErr);
+        if (healthErr.response?.status === 404) {
+          setError('Debug endpoints not found (404). The server may not have the latest code deployed.');
+          setLoading(false);
+          return;
+        }
       }
       
       const response = await axios.get('/api/debug/orders/list', {
