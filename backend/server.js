@@ -83,6 +83,11 @@ app.get('/api/env-check', (req, res) => {
     // Show first/last 4 chars only for security
     shopifyUrlPreview: process.env.SHOPIFY_STORE_URL ? 
       `${process.env.SHOPIFY_STORE_URL.substring(0, 4)}...${process.env.SHOPIFY_STORE_URL.slice(-4)}` : 
+      'not set',
+    // Show full store URL for debugging (remove this after fixing)
+    shopifyStoreUrl: process.env.SHOPIFY_STORE_URL,
+    shopifyTokenPreview: process.env.SHOPIFY_ACCESS_TOKEN ? 
+      `${process.env.SHOPIFY_ACCESS_TOKEN.substring(0, 10)}...${process.env.SHOPIFY_ACCESS_TOKEN.slice(-4)}` : 
       'not set'
   });
 });
