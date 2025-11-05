@@ -88,26 +88,34 @@ app.get('/api/env-check', (req, res) => {
 });
 
 // Serve frontend static files in production
-if (process.env.NODE_ENV === 'production') {
-  const frontendBuild = path.join(__dirname, '../frontend/build');
+const frontendBuild = path.join(__dirname, '../frontend/build');
+
+// Check if build directory exists
+if (fs.existsSync(frontendBuild)) {
+  console.log(`✅ Frontend build found at: ${frontendBuild}`);
+  app.use(express.static(frontendBuild));
   
-  // Check if build directory exists
-  if (fs.existsSync(frontendBuild)) {
-    console.log(`✅ Frontend build found at: ${frontendBuild}`);
-    app.use(express.static(frontendBuild));
-    
-    // Handle React routing - return all requests to React app (MUST be last)
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(frontendBuild, 'index.html'));
-    });
-  } else {
-    console.error(`❌ Frontend build NOT found at: ${frontendBuild}`);
-    app.get('*', (req, res) => {
-      res.status(404).send('Frontend build not found. Please run: npm run build');
-    });
-  }
+  // Handle React routing - return all requests to React app (MUST be last)
+  // Only for non-API routes
+  app.get('*', (req, res) => {
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    res.sendFile(path.join(frontendBuild, 'index.html'));
+  });
 } else {
-  console.log('ℹ️  Running in development mode - frontend should run separately on port 3000');
+  console.error(`❌ Frontend build NOT found at: ${frontendBuild}`);
+  console.error(`❌ Expected path: ${frontendBuild}`);
+  console.error(`📁 Current directory: ${__dirname}`);
+  console.error(`📂 Directory contents:`, fs.readdirSync(__dirname));
+  
+  app.get('*', (req, res) => {
+    res.status(404).send(`
+      <h1>Frontend build not found</h1>
+      <p>Expected location: ${frontendBuild}</p>
+      <p>Please ensure the build was created during deployment</p>
+    `);
+  });
 }
 
 // Error handling middleware
