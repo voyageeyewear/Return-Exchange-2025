@@ -2,8 +2,8 @@ const axios = require('axios');
 
 const SHOPIFY_STORE_URL = process.env.SHOPIFY_STORE_URL;
 const SHOPIFY_ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
-// Force stable API version - ignoring environment variable if it's 2024-10
-const SHOPIFY_API_VERSION = (process.env.SHOPIFY_API_VERSION === '2024-10') ? '2024-07' : (process.env.SHOPIFY_API_VERSION || '2024-07');
+// Use 2023-10 which is guaranteed to be stable and available
+const SHOPIFY_API_VERSION = '2023-10'; // Hardcoded stable version, ignoring env var completely
 
 // Validate Shopify configuration
 if (!SHOPIFY_STORE_URL) {
