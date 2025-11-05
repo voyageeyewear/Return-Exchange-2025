@@ -138,10 +138,19 @@ function DebugOrders() {
 
           {error && (
             <div className="alert alert-error" style={{ whiteSpace: 'pre-wrap' }}>
-              <strong>Error:</strong> {error}
-              <div style={{ marginTop: '10px' }}>
-                <button className="btn btn-primary" onClick={fetchOrders} style={{ fontSize: '0.9em' }}>
-                  🔄 Try Again
+              <strong>⚠️ Shopify API Access Issue</strong>
+              <p style={{ marginTop: '10px', marginBottom: '10px' }}>
+                The Debug Orders feature requires Shopify Admin API access, which appears to be restricted on your account.
+              </p>
+              <p style={{ marginBottom: '10px', fontSize: '0.9em', color: '#666' }}>
+                <strong>Note:</strong> This doesn't affect the main return/exchange system - customers can still submit returns successfully!
+              </p>
+              <p style={{ fontSize: '0.85em', color: '#999' }}>
+                To enable this feature, contact Shopify Support to verify your store has custom app API access enabled.
+              </p>
+              <div style={{ marginTop: '15px' }}>
+                <button className="btn btn-secondary" onClick={() => navigate('/admin/dashboard')} style={{ fontSize: '0.9em' }}>
+                  ← Back to Dashboard
                 </button>
               </div>
             </div>
