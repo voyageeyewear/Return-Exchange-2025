@@ -1,8 +1,49 @@
 const express = require('express');
-const { getShopifyOrders, getShopifyProducts } = require('../services/shopify');
+const { getShopifyOrders, getShopifyProducts, verifyShopifyConnection } = require('../services/shopify');
 const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
+
+// Test Shopify connection (admin only)
+router.get('/test-connection', authenticateToken, async (req, res) => {
+  try {
+    console.log('🧪 Testing Shopify connection...');
+    const axios = require('axios');
+    
+    const storeUrl = process.env.SHOPIFY_STORE_URL?.trim();
+    const token = process.env.SHOPIFY_ACCESS_TOKEN?.trim();
+    const apiVersion = '2023-10';
+    
+    const fullUrl = `https://${storeUrl}/admin/api/${apiVersion}/shop.json`;
+    console.log('🔗 Test URL:', fullUrl);
+    console.log('🔑 Token (first 10 chars):', token?.substring(0, 10));
+    console.log('🔑 Token length:', token?.length);
+    
+    const response = await axios.get(fullUrl, {
+      headers: {
+        'X-Shopify-Access-Token': token,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    res.json({
+      success: true,
+      shop: response.data.shop.name,
+      message: 'Shopify connection successful!'
+    });
+  } catch (error) {
+    console.error('❌ Connection test failed:', error.message);
+    console.error('❌ Error response:', error.response?.data);
+    console.error('❌ Status code:', error.response?.status);
+    
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      statusCode: error.response?.status,
+      shopifyError: error.response?.data
+    });
+  }
+});
 
 // Get Shopify orders (admin only)
 router.get('/orders', authenticateToken, async (req, res) => {
