@@ -46,14 +46,17 @@ router.get('/list', authenticateToken, async (req, res) => {
     console.log('🛍️ Fetching orders from Shopify...');
     let orders;
     try {
-      orders = await getShopifyOrders(100);
+      // Fetch only 50 orders to avoid timeout
+      orders = await getShopifyOrders(50);
       console.log(`✅ Fetched ${orders.length} orders from Shopify`);
     } catch (shopifyError) {
       console.error('❌ Shopify API error:', shopifyError.message);
+      console.error('❌ Shopify error details:', shopifyError);
       return res.status(500).json({
         error: 'Shopify API error',
         message: shopifyError.message,
-        details: 'Failed to fetch orders from Shopify. Check server logs for details.'
+        details: 'Failed to fetch orders from Shopify. Check server logs for details.',
+        shopifyError: shopifyError.toString()
       });
     }
     
