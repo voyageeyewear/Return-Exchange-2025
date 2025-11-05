@@ -63,7 +63,6 @@ function ReturnForm() {
       setFilteredProducts([]);
       setSelectedExchangeProduct(null);
       setPriceDifference(0);
-      setShowPayment(false);
       setShowProductModal(false);
       setCurrentPage(1);
     }
@@ -154,13 +153,8 @@ function ReturnForm() {
     const difference = newPrice - originalPrice;
     setPriceDifference(difference);
 
-    // Show payment if there's a price difference
-    if (difference > 0) {
-      setShowPayment(true);
-    } else {
-      setShowPayment(false);
-      setPaymentData({ method: 'UPI', upiId: '', transactionId: '' });
-    }
+    // Price difference is now handled by credit option UI
+    // No payment section needed
 
     // Close modal and reset search
     setShowProductModal(false);
@@ -180,7 +174,6 @@ function ReturnForm() {
       });
       setSelectedExchangeProduct(null);
       setPriceDifference(0);
-      setShowPayment(false);
       setCreditOption('next_order'); // Reset credit option
     } else if (name === 'exchangeType') {
       // When exchange type changes, reset reason and product selection
@@ -191,7 +184,6 @@ function ReturnForm() {
       });
       setSelectedExchangeProduct(null);
       setPriceDifference(0);
-      setShowPayment(false);
       
       // If selecting "same", auto-select the current item
       if (value === 'same' && selectedItem) {
@@ -203,7 +195,6 @@ function ReturnForm() {
         };
         setSelectedExchangeProduct(sameProduct);
         setPriceDifference(0);
-        setShowPayment(false);
       }
       
       // If selecting "different", open modal immediately and fetch products in background
@@ -516,7 +507,6 @@ function ReturnForm() {
                   };
                   setSelectedExchangeProduct(sameProduct);
                   setPriceDifference(0);
-                  setShowPayment(false);
                   setShowProductModal(false); // Close modal if open
                 } else if (formData.actionType === 'Exchange' && newReason === 'Exchange with different items') {
                   // Clear selection if switching to different items
