@@ -4,10 +4,22 @@ const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Health check for debug route
+router.get('/health', (req, res) => {
+  console.log('🏥 Debug orders health check');
+  res.json({ 
+    status: 'ok', 
+    message: 'Debug orders endpoint is accessible',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Debug endpoint to list all orders (admin only)
 router.get('/list', authenticateToken, async (req, res) => {
   try {
     console.log('📥 Debug orders request received');
+    console.log('🔐 User authenticated:', req.user ? 'YES' : 'NO');
+    
     const orders = await getShopifyOrders(100);
     console.log(`✅ Fetched ${orders.length} orders from Shopify`);
     
@@ -32,10 +44,12 @@ router.get('/list', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Debug orders error:', error);
+    console.error('❌ Error stack:', error.stack);
     res.status(500).json({ 
       error: 'Failed to fetch orders',
       message: error.message,
-      details: error.toString()
+      details: error.toString(),
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });

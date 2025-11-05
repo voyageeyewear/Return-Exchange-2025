@@ -18,6 +18,7 @@ function DebugOrders() {
   const fetchOrders = async () => {
     const token = localStorage.getItem('adminToken');
     if (!token) {
+      console.log('❌ No admin token, redirecting to login');
       navigate('/admin');
       return;
     }
@@ -25,8 +26,23 @@ function DebugOrders() {
     setLoading(true);
     try {
       console.log('🔄 Fetching debug orders...');
+      console.log('🔑 Token present:', token ? 'YES' : 'NO');
+      console.log('🌐 API URL:', '/api/debug/orders/list');
+      
+      // First check if the endpoint is accessible
+      try {
+        const healthCheck = await axios.get('/api/debug/orders/health');
+        console.log('✅ Health check passed:', healthCheck.data);
+      } catch (healthErr) {
+        console.error('❌ Health check failed:', healthErr);
+      }
+      
       const response = await axios.get('/api/debug/orders/list', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 15000
       });
       
       console.log('✅ Debug orders response:', response.data);
@@ -34,9 +50,24 @@ function DebugOrders() {
       setError('');
     } catch (err) {
       console.error('❌ Debug orders error:', err);
-      const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to fetch orders';
-      const errorDetails = err.response?.data?.details ? `\n${err.response.data.details}` : '';
-      setError(errorMsg + errorDetails);
+      console.error('❌ Error response:', err.response);
+      console.error('❌ Error status:', err.response?.status);
+      console.error('❌ Error data:', err.response?.data);
+      
+      let errorMsg = 'Failed to fetch orders';
+      
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        errorMsg = 'Authentication failed. Please log in again.';
+        setTimeout(() => navigate('/admin'), 2000);
+      } else if (err.response?.status === 404) {
+        errorMsg = 'Debug orders endpoint not found (404). Please check server logs.';
+      } else {
+        errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to fetch orders';
+      }
+      
+      const errorDetails = err.response?.data?.details ? `\n\nDetails: ${err.response.data.details}` : '';
+      const errorStack = err.response?.data?.stack ? `\n\nStack: ${err.response.data.stack}` : '';
+      setError(`${errorMsg}${errorDetails}${errorStack}`);
     } finally {
       setLoading(false);
     }

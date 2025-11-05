@@ -50,6 +50,13 @@ const adminRoutes = require('./routes/admin');
 const shopifySyncRoutes = require('./routes/shopify-sync');
 const debugOrdersRoutes = require('./routes/debug-orders');
 
+// Request logging middleware for debug routes
+app.use('/api/debug', (req, res, next) => {
+  console.log('🔍 Debug route accessed:', req.method, req.path);
+  console.log('🔑 Has Authorization:', !!req.headers.authorization);
+  next();
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
