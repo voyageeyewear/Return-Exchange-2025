@@ -7,8 +7,19 @@ const router = express.Router();
 // Get Shopify orders (admin only)
 router.get('/orders', authenticateToken, async (req, res) => {
   try {
+    console.log('📥 Shopify orders request received');
+    console.log('🔐 User:', req.user?.email);
+    console.log('🔧 Shopify config check:', {
+      hasStoreUrl: !!process.env.SHOPIFY_STORE_URL,
+      hasToken: !!process.env.SHOPIFY_ACCESS_TOKEN,
+      storeUrl: process.env.SHOPIFY_STORE_URL
+    });
+    
     const { limit = 50 } = req.query;
+    console.log(`🛍️ Fetching ${limit} orders from Shopify...`);
+    
     const orders = await getShopifyOrders(limit);
+    console.log(`✅ Successfully fetched ${orders.length} orders`);
     
     res.json({
       success: true,
@@ -26,9 +37,16 @@ router.get('/orders', authenticateToken, async (req, res) => {
       }))
     });
   } catch (error) {
+    console.error('❌ Shopify orders error:', error);
+    console.error('❌ Error message:', error.message);
+    console.error('❌ Error response:', error.response?.data);
+    console.error('❌ Error status:', error.response?.status);
+    
     res.status(500).json({ 
       error: 'Failed to fetch Shopify orders',
-      message: error.message 
+      message: error.message,
+      details: error.response?.data || error.toString(),
+      statusCode: error.response?.status
     });
   }
 });
