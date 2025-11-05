@@ -1,9 +1,17 @@
 const axios = require('axios');
 
-const SHOPIFY_STORE_URL = process.env.SHOPIFY_STORE_URL;
-const SHOPIFY_ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
+// Trim whitespace from environment variables (Railway bug fix)
+const SHOPIFY_STORE_URL = process.env.SHOPIFY_STORE_URL?.trim();
+const SHOPIFY_ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN?.trim();
 // Use 2023-10 which is guaranteed to be stable and available
 const SHOPIFY_API_VERSION = '2023-10'; // Hardcoded stable version, ignoring env var completely
+
+console.log('🔧 Shopify Config (after trim):', {
+  storeUrl: SHOPIFY_STORE_URL,
+  tokenLength: SHOPIFY_ACCESS_TOKEN?.length,
+  tokenStart: SHOPIFY_ACCESS_TOKEN?.substring(0, 10),
+  tokenEnd: SHOPIFY_ACCESS_TOKEN?.slice(-4)
+});
 
 // Validate Shopify configuration
 if (!SHOPIFY_STORE_URL) {
