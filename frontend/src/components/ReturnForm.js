@@ -24,12 +24,6 @@ function ReturnForm() {
   const [products, setProducts] = useState([]);
   const [selectedExchangeProduct, setSelectedExchangeProduct] = useState(null);
   const [priceDifference, setPriceDifference] = useState(0);
-  const [showPayment, setShowPayment] = useState(false);
-  const [paymentData, setPaymentData] = useState({
-    method: 'UPI',
-    upiId: '',
-    transactionId: ''
-  });
   const [showProductModal, setShowProductModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
